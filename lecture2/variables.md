@@ -13,7 +13,7 @@
      
 ## How to define variables?     
      
-In Python (and in almost all other programming languages), variables are assigned a value using **=** (equal to) symbol. The variable name is written on the left hand side of this symbol, and the right hand side can be a _constant_, as shown in examples below:
+In Python (and in almost all other programming languages), variables are assigned a value using an **=** (equal to) symbol. The variable name is written on the left hand side of this symbol, and the right hand side can be a _constant_, as shown in examples below:
 
 ```python
 name = 'Lucy'
@@ -23,7 +23,7 @@ waiter_tip = 9.21
 is_working_day = True
 ```
 
-The right hand side can also be other variables, or expressions, as shows in examples below:
+The right hand side can also be other variables, or expressions, as shown in examples below:
 ```python
 x = 2018
 year = x
@@ -165,7 +165,7 @@ In practice, it is recommended that you use parenthesis wherever possible to cla
 ### Implicit Conversion between numeric types
 - If you add a `float` variable and an `int` variable, python will automatically _convert_ the `int` variable to `float`, and then perform the addition.
   - Technically, Python can only operate on two variables of the same type. That is why it needs to do the conversion.
-- In any operation involving a `float` and an `int`, the `int` variable will always be converted to `float`. The `float` variable will never be converted to `int`.
+- In any operation involving a `float` and an `int`, the `int` variable will always be converted to `float`. The `float` variable will never be converted to the `int` type.
 - If you divide two `int` variables, the output will be of type `float`.
 
 An example illustrating _implicit conversion_.
@@ -180,9 +180,8 @@ An example illustrating _implicit conversion_.
 You can also explicitly convert variables between `int` and `float` types.
   - `float()` converts an `int` to `float`
   - `int()` converts a `float` to `int`
-  - `int()` will just truncate the decimal part of a `float` number. It will not round the value to the nearest integer.
   
-Explicit conversion is most useful to convert a `float` to `int`, as shown below.
+Explicit conversion is most useful to convert a `float` to an `int`, as shown below.
 
 ```python
 >>> age_in_days = 10000
@@ -191,4 +190,11 @@ Explicit conversion is most useful to convert a `float` to `int`, as shown below
 27.397260273972602
 >>> print (int(age_in_years))
 27
+```
+
+Note that `int()` will just truncate the decimal part of a `float` number. It will not round the value to the nearest integer (or to the smaller or larger integer).
+
+```python
+>>> print (int(-5.3))
+-5
 ```
