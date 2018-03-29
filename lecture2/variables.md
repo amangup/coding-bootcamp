@@ -198,6 +198,12 @@ Note that `int()` will just truncate the decimal part of a `float` number. It wi
 >>> print (int(-5.3))
 -5
 ```
+
+### Practice exercises
+1. Take someone's age as input, and tell them in what year will they retire.
+2. If first day of the year is Monday, what will be the 100th day of year be? 
+
+
 ## String Type
 - As mentioned before, it is used to store a _string of characters_.
 - String constants can be defined using `'single quotes'` or `"double quotes"`.
@@ -342,3 +348,6 @@ True
 >>> print (not_going_to_work)
 False
 ``` 
+## Practice exercises
+- Take account balance as input, and print a sentence which says "Your account balance is 350 dollars".
+- Take two names as input, and check if either of them is Matthew.
