@@ -198,3 +198,147 @@ Note that `int()` will just truncate the decimal part of a `float` number. It wi
 >>> print (int(-5.3))
 -5
 ```
+## String Type
+- As mentioned before, it is used to store a _string of characters_.
+- String constants can be defined using `'single quotes'` or `"double quotes"`.
+
+Some examples:
+```python
+name = "Luke Skywalker"
+password = 'l1gh+s@b3r'
+multiline_quote = ("In the long run men only hit what they aim at. Therefore," 
+"though they should fail immediately, they had better aim at something high.")
+
+>>> tabbed_name = 'Luke\tSkywalker'
+>>> print (tabbed_name)
+Luke	Skywalker
+
+>>> newline_name = 'Luke\nSkywalker'
+>>> print (newline_name)
+Luke
+Skywalker
+```
+
+### String Operators
+- Concatenation: **+**
+- Repetition: __*__
+- Index: **[]**
+- Slice: **[a:b]**
+- Membership: **in**
+- Inverse of membership: **not in**
+- String formatting: **%**
+
+Some examples showing how to use the operators above:
+
+```python
+>>> address = '123 California Ave,' + 'Apt 42'
+>>> print (address)
+123 California Ave,Apt 42
+
+>>> lyrics = "Friday," * 5
+>>> print (lyrics)
+Friday,Friday,Friday,Friday,Friday,
+
+>>> last_name = 'Smith'
+>>> print (last_name[0])
+S
+
+>>> month = 'January'
+>>> month_code = month[0:3]
+>>> print (month_code)
+Jan
+
+>>> name = 'Ben Solo'
+>>> is_hans_son = 'Solo' in name
+>>> print (is_hans_son)
+True
+
+>>> team = 'Poe, Chewbacca, Phasma'
+>>> is_good_side = 'Phasma' not in team
+>>> print (is_good_side)
+False
+
+>>> favorite_movies = 'My favorite movies are %s, %s and %s' % ('Lord of the Rings', 'Star Wars', 'Forrest Gump')
+>>> print (favorite_movies)
+My favorite movies are Lord of the Rings, Star Wars and Forrest Gump
+```
+
+### Conversion to and from string:
+- `int()` and `float()` convert a string to the corresponding type of number.
+  - If the string is not a number, an error is raised.
+- `str()` converts numbers to strings.
+
+A few examples
+
+```python
+>>> age_str = '45'
+>>> type(age_str)
+<class 'str'>
+>>> age = int(age_str)
+>>> print (age)
+45
+>>> type(age)
+<class 'int'>
+
+>>> error = float('Luke')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: could not convert string to float: 'Luke'
+
+>>> integer_part = 35
+>>> fractional_part = 99
+>>> number_str = str(integer_part) + "." + str(fractional_part)
+>>> print (number_str)
+35.99
+```
+
+## Boolean Type
+- Boolean variables can represent either `True` or `False`
+- In future lectures, we will learn the concept of branching: Running different code is a variable or expression is `True` or `False`.
+- These are the common _tests_ to get a boolean variable:
+  - Equals: **==**
+  - Not Equal: **!=**
+  - Greater than (or equals to): **>**, **>=**
+  - Less than (or equals to): **<**, **<=**
+
+Following examples check out how these operators are used.
+
+```python
+>>> name = 'Luke'
+>>> is_equal = (name == 'Luke')
+>>> print (is_equal)
+True
+
+>>> is_unequal = (name != 'Anakin')
+>>> print (is_unequal)
+True
+
+>>> print (5 > 4)
+True
+>>> print (2.0 <= 1.9)
+False
+```
+  
+### Boolean operators
+- Two boolean variables can be combined to get a new boolean value using the following operators:
+  - And: `and`
+  - Or: `or`
+  - Not: `not`
+ 
+```python
+>>> wind = 'windy'
+>>> rain_chance = 30
+>>> going_running = (wind != 'windy') and (rain_chance < 50)
+>>> print (going_running)
+False
+
+>>> sick = False
+>>> holiday = False
+>>> going_to_work = (not sick) and (not holiday)
+>>> print (going_to_work)
+True
+
+>>> not_going_to_work = sick or holiday
+>>> print (not_going_to_work)
+False
+``` 
