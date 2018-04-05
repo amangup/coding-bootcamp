@@ -31,7 +31,7 @@ code_entered = 1234
 if code_entered == unlock_code:
     # If block starts
 
-    print ("Welcome!)
+    print ("Welcome!")
     print ("If you are a thief and just guessed the right code, log out!")
 
     # if block ends
@@ -68,14 +68,12 @@ code_entered = 1234
 
 if code_entered == unlock_code:
     # If block starts
-
-    print ("Welcome!)
+    print ("Welcome!")
     print ("If you are a thief and just guessed the right code, log out!")
 
     # if block ends
 else:
-    # else block starts
-    
+    # else block starts    
     print ("Try again")
     
     # else block ends
@@ -156,8 +154,7 @@ Here is an example, which prints the first 10 numbers.
 ```python
 i = 1
 while i <= 10:
-    # Body of loop starts
-    
+    # Body of loop starts    
     print (i)
     i += 1
     
@@ -223,4 +220,4 @@ while True:
 
 ## Practice exercises
 - Update the lock screen example, where you give the user 3 tries, and write "Success!" if the user succeeds within 3 tries, or write "Locked for one hour" if the user fails all 3 tries.
-- Calculate this expression upto 100 terms: 1 + 1/2 + 1/4 + 1/8 + 1/16 + 1/32 + ...
+- Calculate this expression upto 10 terms: 1 + 1/2 + 1/4 + 1/8 + 1/16 + 1/32 + ...
