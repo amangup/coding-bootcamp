@@ -1,4 +1,4 @@
-# Conditional
+# Conditionals
 
 - The main feature of conditional code is to run special code when a _condition_ is met.
 - It is also called branching.
