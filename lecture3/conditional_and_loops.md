@@ -215,7 +215,87 @@ while True:
         print ("You are odd! We don't serve your type here.")
         continue
         
-    print ("Your half is %s", int(number / 2))        
+    print ("Your half is %s", int(number / 2))   
+```
+
+### while-else clause
+- Python supports the use of `else` clause with while statement, similar to how it's used with `if` statement.
+- The code inside the `else` block is executed once whenever the condition in the `while` statement becomes `False`. If the condition is False to begin with, the only the code in `else` block will be executed.
+- If you break out of a loop, then the `else` code block is _not_ executed.
+- Using `continue` doesn't effect the behaviour of while-else.
+
+Here are some examples to show how this works:
+```python
+i = 0
+while i < 2:
+    print (i)
+    i += 1
+else:
+    print ("We are done looping.")
+
+Output:
+0
+1
+We are done looping.
+```
+
+```python
+i = 1
+while i < 1:
+    print (i)
+    i += 1
+else:
+    print ("We never started looping!")
+
+Output:
+We never started looping!
+```
+
+```python
+i = 0
+while i < 5:
+    if i % 2 == 1:
+        break
+    print (i)
+    i += 1
+else:
+    print ("break stole away the attention")
+  
+Output:
+0  
+```
+
+# Empty values in boolean expressions
+- In Python3, certain values of variables (or expressions or constants) can represent `True` or `False`, even if the variables are not of type `bool`.
+- This feature is there to make code writing a bit easier.
+- In the following cases, the value is evaluated to `False`:
+  - an `int` value is 0
+  - a `float` value is 0.0
+  - a `string` value is "" (empty string)
+  - There are more cases as well (for types we will learn about later)- essentially empty value for a built-in type will always evaluate to `False`.
+- If the value doesn't evaluate to `False`, it evaluates to `True`.
+
+```python
+money = 0
+if money:
+    print ("One Modelo for me")
+else:
+    print ("No money for beer!")
+
+Output:
+No money for beer!
+```
+```python
+numerator = 5.0
+denominator = 2.0
+
+if denominator:
+    print (numerator / denominator)
+else:
+    print ("Can't divide by 0")
+    
+Output:
+2.5    
 ```
 
 ## Practice exercises
