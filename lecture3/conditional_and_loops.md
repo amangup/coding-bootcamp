@@ -220,7 +220,7 @@ while True:
 
 ### while-else clause
 - Python supports the use of `else` clause with while statement, similar to how it's used with `if` statement.
-- The code inside the `else` block is executed once whenever the condition in the `while` statement becomes `False`. If the condition is False to begin with, the only the code in `else` block will be executed.
+- The code inside the `else` block is executed once, whenever the condition in the `while` statement becomes `False`. If the condition is False to begin with, only the code in `else` block will be executed.
 - If you break out of a loop, then the `else` code block is _not_ executed.
 - Using `continue` doesn't effect the behaviour of while-else.
 
