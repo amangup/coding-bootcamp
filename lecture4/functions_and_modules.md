@@ -2,7 +2,7 @@
 Functions is a fundamental mechanism designed to write reusable code.
 
 ## What is a function?
-![Lock screen](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/function.jpg)
+![Lock screen](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/function.svg.png)
 
 - Function is a piece of program that programs a specific task. You can name it, and run that program again and again by referring to its name.
 - You can provide function with input  (called _arguments_ or _parameters_), and you can also make the function _return_ the output.
