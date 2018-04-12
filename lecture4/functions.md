@@ -309,13 +309,13 @@ def find_stat(x, y, stat_type):
         return min(x, y)
 ```
 
-Now, if you run the command `pydoc3 -w ~/*.py `, it generated an html file for each python file. [Here is an example how of that looks](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/stats.html)
+Now, if you run the command `pydoc3 -w ~/*.py `, it generated an html file for each python file. [Here is an example how of that looks.](http://htmlpreview.github.io/?https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/stats.html)
 
 It is recommended that you write docstrings for every function (except any _private_ functions).
 
 # Built-in functions
 - Now that we have learned what functions are, how to use them and how to write them, let's see what kind of functions are built into python.
-- [The complete list of built-in functions can be seen here](https://docs.python.org/3/library/functions.html)
+- [The complete list of built-in functions can be seen here.](https://docs.python.org/3/library/functions.html)
 - We have already used a number of functions previously, like:
   - `print()` - to output to screen
   - `input()` - to take input from user
