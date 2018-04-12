@@ -329,7 +329,7 @@ The code listing shows a few more common ones and how to use them:
 3
 
 # find maximum
->>> max(2,6,99)
+>>> max(2, 6, 99)
 99
 
 # get the absolute value. 
@@ -375,7 +375,7 @@ False
   
 # Practice exercises
 - Extend the `find_stat()` function described above to take upto three numbers instead of just two, where the third number is optional for the user. If the third number is not provided, then output stats only using the two numbers which are provided.
-- Write a function which returns True is a number is prime, False otherwise.
+- Write a function which returns `True` is a number is prime, `False` otherwise.
 
 # Recursion (Advanced topic)
 - Recursion is a very useful topic to understand, as it is used in many _algorithms_. It's a powerful programming technique which every good programmer will need at some point or another.
