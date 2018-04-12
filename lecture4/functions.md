@@ -353,7 +353,7 @@ The code listing shows a few more common ones and how to use them:
 10
 
 # check if a variable is of given type. It's useful if you are defining a function
-# to check if two values are useful.
+# to check if two values are equal.
 >>> isinstance(name, str)
 True
 >>> isinstance(name, int)
