@@ -113,7 +113,7 @@ Output:
 
 ## Function scope
 - Variables inside the function, including argument variables, are not visible to the code outside the function. These variables are said to be defined in the **scope** of the function.
-- The function can use variables defined in a _larger_ scope.
+- The function can read variables defined in a _larger_ scope, but cannot write to them.
 
 Here is an example:
 ```python
