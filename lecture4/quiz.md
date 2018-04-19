@@ -38,16 +38,16 @@ d: Python raises an error
 
 **Question 3**
 ```python
-def square():
+def power():
   return n ** n
     
 n = 1
-square_sum = 0
+power_sum = 0
 while n <= 3:
-  square_sum += square()
+  power_sum += power()
   n += 1
   
-print (square_sum)
+print (power_sum)
 ```
 
 Options:  
