@@ -577,7 +577,7 @@ for key, value in neighborhood_population.items():
     (city, neighborhood) = key
     # We are using the get(key, default_value) method in the dict class
     # This returns the value associated with the key in dict, if that key
-    # is present in the class. Otherwise, it returns default_value
+    # is present in the dict. Otherwise, it returns default_value
     current_max = largest_hood.get(city, ('default', 0))[1]
 
     if value > current_max:
