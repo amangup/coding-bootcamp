@@ -1,11 +1,11 @@
 # Collection types and for loop
 
-We are going to learn about types which can be descibed as a collection of values. Then we will learn how to iterate over all values of that collection using the `for` loop statement.
+We are going to learn about types which can be described as a collection of values. Then we will learn how to iterate over all values of that collection using the `for` loop statement.
 
 ## List
 - A sequence of values.
 - These values can be of _any type_ (`int`, `str`, `list`, `tuple`, `dict`, custom types, etc.)
-- The `list` type is similar to the `str` type, and most of the things we learned for strings apply for lists (and vice versa).
+- The `list` type is similar to the `str` type, and most of the things we learned for strings apply for lists.
 
 ### Creating lists
 - A list can be defined by using the square brackets and specifying a sequence of elements, as follows.
@@ -28,7 +28,7 @@ print (nums)
 ```
 
 ```python
-# Left argument is included, right argument is exluded
+# Left argument is included, right argument is excluded
 nums = list(range(-7, 5))
 print (nums)
 [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4]
@@ -55,7 +55,7 @@ print (len(mixed))
 
 #### The basic case: getting one item from a list.
 - This is called indexing.
-- The return type is not a list, but the type of the items inside the list
+- The return type is not a list, but the type of the item inside the list
 
 ```python
 # lists are 0-indexed
@@ -185,7 +185,7 @@ print (odd_weekdays)
 ["Sun's day", "Tyr's day", "Thor's day", "Saturn's day"]
 ```
 
-- As with index parameters, the stride parameter also accepts negative values. In this case, Python starts from the back of the list, and pick up elements as it goes towards the start of the list.
+- As with index parameters, the stride parameter also accepts negative values. In this case, Python starts from the back of the list, and picks up elements as it goes towards the start of the list.
 
 ```python
 reverse_odd_weekdays = weekdays[::-2]
@@ -193,7 +193,7 @@ print (reverse_odd_weekdays)
 ["Saturn's day", "Thor's day", "Tyr's day", "Sun's day"]
 ```
 
-- This gives a convenient way to reverse any list (or string):
+- This gives us a convenient way to reverse any list (or string):
 
 ```python
 reverse_weekdays = weekdays[::-1]
@@ -278,7 +278,7 @@ shopping_list.extend(['butter', 'oil'])
 print(shopping_list)
 ['milk', 'strawberries', 'tomatoes', 'chips', 'butter', 'oil']
 
-# The last statement is identical to using the + operator
+# The last statement is identical to the statement using the + operator
 shopping_list += ['butter', 'oil']
 print(shopping_list)
 ['milk', 'strawberries', 'tomatoes', 'chips', 'butter', 'oil']
@@ -468,8 +468,8 @@ Check the ID before proceeding.
 
 ## Dictionaries
 - Dictionary is another _collection_ type.
-- Dictionary is a **mapping** from keys to values. E.g., let's say you want to store the population of major cities in the USA. Then that can be specified as a mapping as follows: City name --> City population
-- In a dictionary, you cannot have two identical keys. In many use cases, this is desired. For example, in the case of city population map, we don't want the same city to be present twice.
+- Dictionary is a **mapping** from keys to values. E.g., let's say you want to store the population of major cities in the USA. Then that can be specified as a mapping as follows: City name --> City population.
+- In a dictionary, you cannot have two identical keys. In many problems, this is desired. For example, in the case of city population map, we don't want the same city to be present twice.
 - There is _no order_ in the keys of a dictionary. That is why we don't call it a _sequence_.
 - Like the list, dictionary is a mutable type.
 
@@ -553,6 +553,7 @@ print (neighborhood_population)
 # In the following code, let's find the largest neighborhood
 # in each city
 
+neighborhood_population = {}
 neighborhood_population[("San Francisco", "Downtown")] = 43000
 neighborhood_population[("San Francisco", "Western Addition")] = 51000
 neighborhood_population[("San Francisco", "Outer Sunset")] = 47000
@@ -565,6 +566,7 @@ neighborhood_population[("New York", "Borough Park")] = 106000
 neighborhood_population[("New York", "Crown Heights North")] = 103000
 neighborhood_population[("New York", "Jackson Heights")] = 113000
 
+# largest_hood will store a map from city --> (neighborhood, population)
 largest_hood = {}
 # Note that we are using the items() method in the class dict
 for key, value in neighborhood_population.items():
@@ -573,11 +575,10 @@ for key, value in neighborhood_population.items():
 
     # Unpacking the key
     (city, neighborhood) = key
-    if city not in largest_hood:
-        largest_hood[city] = (neighborhood, value)
-        continue
-    else:
-        current_max = largest_hood[city][1]
+    # We are using the get(key, default_value) method in the dict class
+    # This returns the value associated with the key in dict, if that key
+    # is present in the class. Otherwise, it returns default_value
+    current_max = largest_hood.get(city, ('default', 0))[1]
 
     if value > current_max:
         largest_hood[city] = (neighborhood, value)    
