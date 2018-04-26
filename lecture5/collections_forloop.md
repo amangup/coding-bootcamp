@@ -464,7 +464,14 @@ else:
 
 Output:
 Check the ID before proceeding.
-```
+``` 
+
+## Practice exercises
+- You get a number n, and a list which contains some integers between 0 and n.
+Write a function that returns a new list containing every number between 0 and n,
+that is not present in the original list.
+- There are two lists (each containing integers), which are sorted in ascending order. Write a function that creates a new list which merges these two lists (every element in original two lists is present in the new list), and the new list is also sorted.
+
 
 ## Dictionaries
 - Dictionary is another _collection_ type.
@@ -546,7 +553,6 @@ print (neighborhood_population)
 {('San Francisco', 'North Beach'): 12000}
 ```
 
-
 - We can iterate over all elements of the dictionary
 
 ```python
@@ -614,6 +620,43 @@ debug: {'San Francisco': ('Mission', 55000), 'New York': ('Upper West Side', 137
 processing:  ('New York', 'Jackson Heights')
 debug: {'San Francisco': ('Mission', 55000), 'New York': ('Upper West Side', 137000)}
 ```
+## Dictionary methods
+- Dict class defines many methods. A bigger list is [available here](https://docs.python.org/3/library/stdtypes.html#mapping-types-dict).
+- Here we want to look at two methods - `keys()` and `values()` which are commonly used. They return a sequence which can be used for many purposes.
+
+
+```python
+city_population = {"New York City": 8550405, "Los Angeles": 3971883,
+                   "Chicago": 2720546, "Houston": 2296224,
+                   "Philadelphia": 1567442, "Phoenix": 1563025,
+                   "San Antonio": 1469845, "San Diego": 1394928,
+                   "Dallas": 1300092, "San Jose": 1026908}
+
+print (city_population.keys())
+dict_keys(['New York City', 'Los Angeles', 'Chicago', 'Houston', 'Philadelphia', 'Phoenix', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'])
+
+print (city_population.values())
+dict_values([8550405, 3971883, 2720546, 2296224, 1567442, 1563025, 1469845, 1394928, 1300092, 1026908])
+```
+
+- You can iterate over these sequences
+
+```python
+num_cities_high_population = 0
+for population in city_population.values():
+    if population > 2 * 1000000:
+        num_cities_high_population += 1
+        
+print ("Num cities with population more than 2 Million:", 
+       num_cities_high_population )
+       
+Output:
+4
+```
+
+
+## Practice Exercises
+- Take two dictionaries as input, and return a new dictionary that has all elements the elements common to both input dictionaries.
 
 
 
