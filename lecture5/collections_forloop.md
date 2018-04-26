@@ -651,7 +651,7 @@ print ("Num cities with population more than 2 Million:",
        num_cities_high_population )
        
 Output:
-4
+Num cities with population more than 2 Million: 4
 ```
 
 
