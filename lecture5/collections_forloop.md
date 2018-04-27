@@ -386,6 +386,16 @@ name, gender, age, force_sensitivity = biodata
 print (name)
 Luke Skywalker
 ```
+- Python has a cool built-in function which can be used to create a list of tuples from multiple lists. This comes in handy in many situations.
+
+```python
+list1 = ["Leia", "Obi-Won", "Mace Windu"]
+list2 = ["Female", "Male", "Male"]
+print (list(zip(list1, list2)))
+
+Output:
+[('Leia', 'Female'), ('Obi-Won', 'Male'), ('Mace Windu', 'Male')]
+```
 
 ## The for loop
 - Now that we understand sequence types, we can learn about the `for` statement.
