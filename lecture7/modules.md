@@ -18,7 +18,7 @@ def get_sorted_values(adict):
 
 def get_inverse_dict(adict):
     inverse = {}
-    for key, value in adict:
+    for key, value in adict.items():
         inverse[value] = key
 
     return inverse
@@ -99,7 +99,7 @@ As an example, let's modify the print statement in `dict_utils.py` one more time
  ```python
 if __name__ == '__main__':
     print ("Variable __name__ is %s" % __name__)
-    print ("This is the dict_utils module. Use it for all your dictionary needs" % __name__)
+    print ("This is the dict_utils module. Use it for all your dictionary needs")
 ```
  
 If we run our `dict_utils_test.py` file again, we get the following output: 
