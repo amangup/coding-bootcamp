@@ -138,8 +138,8 @@ if __name__ == '__main__':
     main()
 ```
    
-## Built-in modules
-- Python has a very large number of modules built into it.
+## Modules in Python standard library
+- Python has a very large number of modules built into its **standard library**.
 - An even larger number of modules are available which written by other programmers and shared for you to use for free.
 
 In the following sections, I am going to highlight a few popular built-in modules and show how to use _third party_ modules.
@@ -150,7 +150,7 @@ In the following sections, I am going to highlight a few popular built-in module
 
 Here is a tiny sample of its capabilities.
 
-```python3
+```python
 > import datetime
 
 # In computer science, timestamp is defined as the number of seconds elapsed since
@@ -180,7 +180,7 @@ Here is a tiny sample of its capabilities.
 ### math module
 - This is another super useful module, defining a number of mathematical functions.
 
-```python3
+```python
 # Get the gcd of two integers
 > import math
 > print(math.gcd(32, 48))
@@ -199,9 +199,102 @@ Here is a tiny sample of its capabilities.
 - The full documentation for the math module is [available here](https://docs.python.org/3/library/math.html).
 
 ### random module
+- `random` module is useful in certain cases. For example, 
+  - If we want to test a new UI, we may want to show the new UI only on a random selection of 1% users.
+  - There are many algorithms (called **Randomized Algorithms**) which sometimes perform better than any non-randomized equivalent (Quick sort is a popular example).
+  
+Here is some sample usage:
 
+```python
+> import random
+# For getting a random integer
+> print(random.randint(5,10))
+7
+> print(random.randint(5,10))
+9
+
+# For getting a random float in the range [0.0, 1.0)
+> print(random.random())
+0.304776972595302
+
+# Print True with 25% probability, False otherwise
+# If you run this many times, you will see number of Trues and False
+# according to the probability (more or less) 
+> print(True if random.random() <= 0.25 else False)
+False
+
+# It even supports some distributions other than uniform 
+> print (random.gauss(mu=0.5, sigma=0.25))
+0.6755629832260551
+```
 
 ### os module
+- `os` module is used to execute code and perform actions that you would normally do in the command line, for example getting a list of files, getting the creation timestamp of a file, etc.
+- Most real projects use this module for some use case.
+
+Here is an example of using the `os` module's path submodule, and its function
+`os.path.getctime()` to get the creation time of files in a directory.
+
+```python
+# Here is some code to list all files in descending order of their creation 
+# timestamp
+import glob  # This is a module frequently used if you are handling files. 
+import os
+dir_location = "/home/aman/aman_code/coding-bootcamp/*"
+list_of_files = glob.glob(dir_location)
+print(sorted(list_of_files, key=os.path.getctime, reverse=True))
+```
+
+Output is:
+```
+['/home/aman/aman_code/coding-bootcamp/lecture7', '/home/aman/aman_code/coding-bootcamp/lecture6', '/home/aman/aman_code/coding-bootcamp/lecture5', '/home/aman/aman_code/coding-bootcamp/README.md', '/home/aman/aman_code/coding-bootcamp/file~', '/home/aman/aman_code/coding-bootcamp/lecture2', '/home/aman/aman_code/coding-bootcamp/lecture4', '/home/aman/aman_code/coding-bootcamp/lecture3', '/home/aman/aman_code/coding-bootcamp/lecture1', '/home/aman/aman_code/coding-bootcamp/Syllabus for Python Coding Bootcamp.pdf']
+```
 
 ### Using third party modules
+- Third party modules are libraries written by community members, who (usually) share their module for free.
+- They are not already part of your installation, but you can install them using the pip3 utility.
 
+PyCharm is useful help you install modules. We have to structure our project in a certain way, and then PyCharm asks you by itself to install modules which are not already installed on your computer.
+
+For a small project, here is a very simple project structure to have:
+```
+Readme.rst
+requirements.txt
+my_project/my_main.py
+my_project/my_utils.py
+...
+```
+
+Note the file `requirements.txt`. It's sole purpose is to list out all third party modules which are required for this project to run. Let's create a requirements.txt with only one third party module:
+
+```
+tinydb==3.9.0
+```
+
+This module uses a file to create a _tiny_ database of data. Let's create a project folder called `test_tinydb` and create a file called `tinydb_sample.py`, which contains:
+
+```python
+import os
+import tinydb
+
+db_filename = 'test_db.json'
+
+# First let's delete the file we will use for db
+if (os.path.exists(db_filename)):
+    os.remove(db_filename)
+    
+db = tinydb.TinyDB(db_filename)
+db.insert({'name': 'Luke', 'age': 19})
+db.insert({'name': 'Anakin', 'age': 42})
+
+Jedi = tinydb.Query()
+print(db.search(Jedi.name == 'Luke'))
+```
+
+PyCharm should highlight that this module is not installed, asking you to install it. You can also install this from the command line using the following command:
+
+```
+pip3 install -r requirements.txt
+```
+
+Once the package is installed, the above program should work and print the record associated with Luke.
