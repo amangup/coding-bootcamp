@@ -1,6 +1,6 @@
 # Assignments
 
-This is the set of assignments for the lecture modules. You can implement the solutions on your local machine in an IDE (like PyCharm). For some cases, there are no exact test cases to check correctness; in those cases some strategy to check correctness will be described.
+This is the set of assignments for the lecture on modules. You can implement the solutions on your local machine in an IDE (like PyCharm). For some cases, there are no exact test cases to check correctness; in those cases some strategy to check correctness will be described.
 
 ## Problem 1
 Monte Carlo algorithms are a set of algorithms that use some form of randomization to calculate the answer to the question. These algorithms don't always find the best possible solution, but with large sample set, it's result can be quite close to the real answer.
@@ -13,7 +13,7 @@ The above diagram shows a circle drawn such that it's radius is 1.0 units. There
 
 Let's say you generate one random point whose x coordinate lies in `(-1.0, 1.0)`, and the y coordinate also lies in `(-1.0, 1.0)`. This random point will always be inside the square. Some of those points will also be inside the circle. How do we figure out if the point is inside the circle? We can use the fact that the distance of the point `(x, y)` from the center `(0, 0)` is `x^2 + y^2`. Considering the radius of our circle is `1.0`, the point is inside the circle if `x^2 + y^2 < 1.0`.
 
-Write a function `monte_carlo_pi(n)` which generates n random points as described above, where `n` is a reasonably large number. All points are inside the square, so the number of those points can be assumed to be the area of the square (`= 4.0`). Many of the points will be inside the circle, the number of such points can be assumed to be the area of the circle (`= pi`). Thus the ratio of points inside the circle to the total number of points should equal `pi / 4.0`. Use this algorithm to make the function return the estimated value of `pi`.
+Write a function `monte_carlo_pi(n)` which generates n random points as described above, where `n` is a reasonably large number. All points are inside the square, so the number of those points can be assumed to be the area of the square (`= 4.0`). Many of the points will be inside the circle, the number of such points can be assumed to be the area of the circle (`= pi`). Thus, the ratio of points inside the circle to the total number of points should equal `pi / 4.0`. Use this algorithm to make the function return the estimated value of `pi`.
 
 e.g.
 
@@ -76,6 +76,8 @@ The assistant should select the first available time slot, such that:
 Write a function `schedule_meeting(length_in_mins, reserved_slots)`, where `reserved_slots` is a list of tuples containing the start time of that slot in the format like `2018-05-30 13:30`, and its length in minutes.
 
 It's obvious that you will need to use the `datetime` module for this problem. Take your time on this one as this will probably take more effort than you might think.
+
+Note that the following examples were run on the date `2018-06-01`.
 
 e.g.
 
