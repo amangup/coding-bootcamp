@@ -8,8 +8,6 @@ Before we start looking at Python syntax for defining classes and creating objec
 
 ## A watch as object
 
-** omega moonwatch **
-
 ![A chronograph watch](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture8/watch_face.jpg)
 
 - This is a watch which shows the time as hours, minutes, seconds, shows the date, and has a chronograph complication (i.e., it works as a stop watch). It has one crown (to set time and date), and two pusher buttons to operate the chronograph. There are additional sub-dials and hands on the dial to indicate the current reading of the chronograph.
@@ -27,7 +25,6 @@ Before we start looking at Python syntax for defining classes and creating objec
 ### The object has data
 
 ![A watch movement](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture8/watch_movement.jpg)
-
 
 - The current positioning of the gears in the movement encodes the data stored in one physical watch, which is the hour, minute, second and the date at any given moment. The chronograph indications are also data values stored in this object. All of these values can be thought of as variables containing data.
 - Any two watches will likely have different values for these _variables_.
