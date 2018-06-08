@@ -186,8 +186,8 @@ import datetime
 
 class Watch:   
     def __init__(self, format_12_hour=False):
-        self.set_time(10, 10, 0)
         self._format_12_hour = format_12_hour
+        self.set_time(10, 10, 0)
         
     def set_time(self, hour, minute, secs):
         hour = self._convert_hour_format_(hour)
