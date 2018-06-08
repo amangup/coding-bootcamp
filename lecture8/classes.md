@@ -288,3 +288,32 @@ GmtTime after offset: (11, 30, 0)
   - If we didn't do that, the `GmtWatch` wouldn't function as a simple `Watch` (in fact, since GMT function uses the basic watch functionality, nothing would work as expected). 
 
 **Exercise:** Write a class called `Chronograph` which extends the `Watch` class and implements the chronograph functionality. A chronograph can be started, paused, and reset back to zero. At any time, the current value of chronograph indications can also be read.
+
+## More features in class
+- Many times, there is use for variables in a class whose value is common for all objects of the class. These are called **class variables**.
+- To create class variables, you can just create a variable inside the class definition, but outside any method definition.
+
+An example:
+
+```python3
+class Dog:
+    kind = 'canine'         # class variable shared by all instances
+
+    def __init__(self, name):
+        self.name = name    # instance variable unique to each instance
+```
+
+Example usage
+
+```
+> d = Dog('Fido')
+> e = Dog('Buddy')
+> print(d.kind)                  # shared by all dogs
+'canine'
+> print(e.kind)                  # shared by all dogs
+'canine'
+> print(d.name)                  # unique to d
+'Fido'
+> print(e.name)                  # unique to e
+'Buddy'
+```
