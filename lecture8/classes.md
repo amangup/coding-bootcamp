@@ -230,7 +230,7 @@ Time: (8, 30, 0)
 - It basically means that you can create new classes which are **child** classes of some class. That parent class is usually called **base class**.
 - When you inherit from a base class, all the data attributes and method automatically become a part of your class.
 - You can define new data attributes and methods, and use the data attributes and methods of the base class in your new methods.
-- This allows anyone to extend the functionality of a class.
+- This allows anyone to extend the functionality of a class. This concept can also be used to define an application interface (API) which subclasses can implement (this is illustrated in assignments).
 - If some code is written to expect an object of the base class, you can instead pass an object of the child class and that code will continue to work (unless you override a base class method _wrongly_, discussed below).
 
 ### Inheriting from a base class
@@ -288,6 +288,7 @@ GmtTime after offset: (11, 30, 0)
   - If we didn't do that, the `GmtWatch` wouldn't function as a simple `Watch` (in fact, since GMT function uses the basic watch functionality, nothing would work as expected). 
 
 **Exercise:** Write a class called `Chronograph` which extends the `Watch` class and implements the chronograph functionality. A chronograph can be started, paused, and reset back to zero. At any time, the current value of chronograph indications can also be read.
+
 
 ## More features in class
 - Many times, there is use for variables in a class whose value is common for all objects of the class. These are called **class variables**.
