@@ -150,8 +150,10 @@ We will use this app to understand a bit more about how Flask works.
     * This means that Flask uses the string you return as the HTML response. If you use your web browser's inspector (press Ctrl/Cmd + Shift + C, and choose the "Network" tab), you will see that among the response params, the content type is `text/html; charset=utf-8`.
     * Change the `hello()` function to return this string `<html><body><h1>Hello, World!</h1></body></html>` so that your response string actually is in HTML. You will see that the size of text becomes larger. This is because the tag `h1` formats the text to look like a heading.
     * In general, the HTTP response contains a number of parameters. Flask generates all of them for you.
+    
 2. Enter the address `http://localhost:8080/nowhere`, while having the network inspector running. You will notice that the response status is now 404.
     * Flask automatically returns an appropriate response when someone goes to a path that doesn't exist.
+    
 3. Let's try to break the code. In the `hello()` function, change the code to `return str(2/0)`. This will raise an Exception when you load the page. Do that, with the network inspector running. You will see the message "Internal Server Error", and the response code is 500.
     * This is another situation that Flask handles automatically.
     * If, in `test_server.py`, you add the argument `debug=True` in the method call `app.run()`, you will see that Flask gives you the details of the Exception that is raised (in this case, the `ZeroDivisionError`).
@@ -241,6 +243,8 @@ There are two new elements you need to understand how this works:
 - The render_template returns a string which is the _rendered html_, which is the return value of the function.
 
 The template systems are sophisticated languages of their own, containing things like if conditions and loops. We will learn this language for the `jinja2` template system as we build more web servers.
+
+## Fortune Teller App
 
 ### Creating web forms
 - To build our Fortune Teller app, we need to create a web form which asks the user for their name. In this section, we will learn how to create a web form, and then how to use the data collected in the form.
@@ -376,3 +380,17 @@ app.config['SECRET_KEY'] = 'very-hard-password'
 ```
 
 Time to run it! Run the test server and see how it works.
+
+#### More about /fortune view
+
+1. The way we have created the `/fortune` view, we can only go to that URL via the form. If you enter `http://localhost:8080/fortune` in your browser, you will get a Bad Request response (status=400).
+
+2. The form data is sent as part of the request when we submit the form. It can be seen in the Request Params section of the network inspector in your browser.
+
+3. When you submit the form and see the `/fortune` page, try refreshing it. The browser will ask you if you want to repeat the data you sent earlier. This is because of what we saw in point 1 above - the request which is used to render this page (`POST` request, form data is included) is different from the request that is created when you simply enter `http://localhost:8080/fortune` in your browser (`GET` request, no form data).
+
+### Displaying a random fortune on the fortune page
+
+- I have created a file called [fortunes.txt](https://github.com/amangup/coding-bootcamp/blob/master/lecture10/fortunes.txt) which contains a list of many fortunes, one per line.
+- **This part is left as an exercise**: Use this file and display a random fortune to the user.
+
