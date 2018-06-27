@@ -240,7 +240,7 @@ If you start your server after making the changes, and keep refreshing the addre
 There are two new elements you need to understand how this works:
 - Firstly, we need to import the `render_template` function for this work. It's part of the `flask` module.
 - In the function `hello()`, we call the function `render_template` with the name of the template we are using (Flask knows which directory to look for to find this file), and then you have to use keyword arguments to give values for all objects the template is expecting you to provide.
-- The render_template returns a string which is the _rendered html_, which is the return value of the function.
+- The `render_template` function returns a string which is the _rendered html_, and that is returned as the value of the function.
 
 The template systems are sophisticated languages of their own, containing things like if conditions and loops. We will learn this language for the `jinja2` template system as we build more web servers.
 
@@ -265,7 +265,7 @@ class NameForm(FlaskForm):
 ```
 
 - An object of `NameForm` will be passed to the template, which is then used by template to render the page. There is a lot of functionality that is also contained in the NameForm class:
-    - It knows how to create an appropriate HTTP request when someone submits a form.
+    - It knows how to generate the HTML for each form field.
     - On the web, forms can be used to _attack_ a website. This class helps us protect from that.
     - Even though we are not using it right now, it allows us to validate the data entered in the form.
 
@@ -273,7 +273,7 @@ class NameForm(FlaskForm):
 - In our class, we create class variables which define what each field in the form is
   - The `username` is a field where one can enter a string. It should be presented to the user with the label "Name".
   - The `submit` field represents the form submit button. The button should say "See your fortune!".
-- Since we are creating class variables, it looks like that the data for username and submit will be the same for all objects. But that is not the case: Internally, FlaskForm creates a copy of `username` and `submit` for each instance and uses the class variables for the definition of field only.
+- Since we are creating class variables, it looks like that the data for `username` and `submit` will be the same for all objects. But that is not the case: Internally, FlaskForm creates a copy of `username` and `submit` for each instance and uses the class variables for the definition of field only.
 
 #### Creating a form template
  
@@ -300,10 +300,10 @@ class NameForm(FlaskForm):
 ```
 
 - Let's focus on the section which begins with `<form>` and ends with `</form>`
-- HTML defines the <form> tag browsers understand and render as a form.
+- HTML defines the `<form>` tag that browsers understand and render as a form.
 
 - A form must define the `action` and the `method`:
-  - `action` is the URL path that the user to go to when the form is submitted. The data in the form is part of that request. We will understand what the function `url_for()` does shortly.
+  - `action` is the URL path that the user to go to when the form is submitted. The data entered in the form is part of that request. We will understand what the function `url_for()` does shortly.
   - `method` is the HTTP method to use when making that request. HTTP recommends that we use `POST` method when we are sending data to the web server.
 
 - Inside the form, we need to render two fields - `form.username` and `form.submit`.
@@ -379,6 +379,11 @@ We are almost done. We only need to take care of a formality for form security p
 app.config['SECRET_KEY'] = 'very-hard-password'
 ```
 
+You should also update the next import line to the following (include `show_fortune`):
+```python
+from fortune_teller import home, show_fortune
+```
+
 Time to run it! Run the test server and see how it works.
 
 #### More about /fortune view
@@ -387,7 +392,7 @@ Time to run it! Run the test server and see how it works.
 
 2. The form data is sent as part of the request when we submit the form. It can be seen in the Request Params section of the network inspector in your browser.
 
-3. When you submit the form and see the `/fortune` page, try refreshing it. The browser will ask you if you want to repeat the data you sent earlier. This is because of what we saw in point 1 above - the request which is used to render this page (`POST` request, form data is included) is different from the request that is created when you simply enter `http://localhost:8080/fortune` in your browser (`GET` request, no form data).
+3. When you submit the form and see the `/fortune` page, try refreshing it. The browser will ask you if you want to resend the data you sent earlier. This is because of what we saw in point 1 above - the request which is used to render this page (`POST` request, form data is included) is different from the request that is created when you simply enter `http://localhost:8080/fortune` in your browser (`GET` request, no form data).
 
 ### Displaying a random fortune on the fortune page
 
@@ -398,11 +403,11 @@ Time to run it! Run the test server and see how it works.
 
 Let's spruce up our web app a bit. First, let's display an image on the home page.
 
-To do that, we need to understand how does a web server serve static file.
-- The browser makes a GET request for a static file like any other GET request
+To do that, we need to understand how does a web server serve static files.
+- The browser makes a `GET` request for a static file like any other `GET` request.
 - The web server should understand that this request is for a file, and it has to send back that file in response.
 - Flask supports this behaviour.
-    - Though the Flask supports this, it is very rudimentary. This is because production websites use CDNs (Content Delivery Network) to store and serve static files. Doing that is out of the scope of this bootcamp.
+    - Though Flask supports this, it is not used in production servers. Production websites use CDNs (Content Delivery Network) to store and serve static files. Doing that is out of the scope of this lecture.
 
 #### Showing images
 
@@ -435,7 +440,7 @@ To display the image, we just need to add the following line inside `home.html` 
 ```
 
 - The HTML `img` tag is used to display images.
-- The `src` tag contains the URL at which image can be found
+- The `src` field in the `img` tag contains the URL at which image can be found.
 - We use the `url_for()` function to create that URL.
   - Flask has a convention where the directory named `static` can be used to serve static files. It will not work if you rename the directory to something else.
   - If you call the function `url_for` as shown above, it creates the appropriate url for the image.
@@ -446,7 +451,11 @@ You can now see the image (whatever you chose) on the home page of your web app.
 
 #### Showing the fortune in style
 
-We are going to use CSS (Cascading Style Sheets)to beautify the look of how the fortune is displayed. For that, we need appropriate CSS code. I found the following code online, and copied this into a file called `quote.css`, and copied it into the `static` directory. I have almost no idea how this CSS works!
+We are going to use CSS (Cascading Style Sheets) to beautify the look of how the fortune is displayed. This is how it looks:
+
+ ![Fortune](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture10/fortune_css.png)
+
+For that, we need appropriate CSS code. I found the following code online, put this into a file called `quote.css`, and copied it into the `static` directory. I have almost no idea how this CSS works!
 
 ```
 /* From https://www.kirstencassidy.com/css-fancy-quotes/ */
@@ -503,14 +512,14 @@ Again, we only need to change the template (this time, `fortune.html`). Here is 
 
 - To link CSS to your HTML file, we use the `link` HTML tag. 
 - We need to tell the `link` tag where to find the file containing the CSS code. We use the `url_for()` function in exactly the same way we used it to display the image above.
-- The tag in which we put the quotation (I use `div` by default), we add `class="quotation"` to refer to the CSS class `quotation` that is created in the CSS code.
+- To the tag in which we put the fortune (I use `div` by default), we add `class="quotation"` to refer to the CSS class `quotation` that is created in the CSS code.
 
 ## Deploying your app on pythonanywhere.com
 
 - We have created a fun website, and we obviously want to share it with our friends!
 - To do that, we need to host our web app on a hosting platform.
 - We are going to use [pythonanywhere.com](https://www.pythonanywhere.com/) to host our web app.
-  - It has a free level of service which is good enough for our purposes
+  - It has a free level of service which is good enough for our this purpose.
   - It is compatible with Flask apps, and thus it's pretty easy to get our app running there.
   
 Here is the list of instructions to deploy your fortune teller website there:
@@ -523,7 +532,7 @@ Here is the list of instructions to deploy your fortune teller website there:
 6. Once the terminal is running (you should see a `$` prompt), run the command `unzip fortune_teller.zip`. That will unzip the files for your web app.
 7. On the top right, click on the tribar icon, and select "Web".
 8. Click on `Add a new web app`. Click next until you reach "Select a Python Web framework".
-9. Select "Flask", and then select Python 3.6. When it asks you the path where to create the flask app, just choose default (we will not use that.)
+9. Select "Flask", and then select Python 3.6. When it asks you the path where to create the flask app, just choose the default (we will not use that).
 10. Eventually, you should see the "configuration" page for your web app. Click on Code -> WSGI configuration file: (starts with `/var/www`).
 11. You are now editing a python file. Change `project_home` path to `u/home/<your username>/fortune_teller`
 12. In the last line, change `flask_app` to `fortune_teller`.
