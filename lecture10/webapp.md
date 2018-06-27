@@ -139,7 +139,7 @@ if __name__ == '__main__':
   - Note that we are now _outside_ the package.
 - The method `run()` in the object `app` starts a web server. We provide the method with two arguments, which is the address of where we are running the web server.
   - `host` is used to refer to the IP address. In networking, the address **127.0.0.1** always means the **localhost**, i.e., the device on which you are running this code.
-  - `port` is the port on which this web server will listen. We can choose any value which is not already being used. Typically, no production code uses 8080, and its commonly used for development.
+  - `port` is the port on which this web server will listen. We can choose any value which is not already being used. Typically, no production code uses 8080, and it's commonly used for development.
   
 Your Hello World webapp is ready! You can run the file `test_server.py`, go to your browser and type the address `http://localhost:8080/` and you will see the result. Try changing the return value of the `hello()` function and see the browser output change.
 
@@ -202,12 +202,12 @@ Here is what the file `hello_world.html` will contain:
 - This is a very simple html page
 - It sets the title to "Hello" (this shows up on the Titlebar of the browser window).
 - It has a body, in which we have a placeholder inside the `h1` tag (that will display the text as big and bold.)
-- This placeholder uses double curly braces in the start and the end, and expects the object `hello_world` - which it use to replace the placeholder with.
+- The placeholder uses double curly braces in the start and the end, and expects the object `hello_world` - which it uses to replace the placeholder with.
 
 ### Rendering a template
 - The act of replacing placeholders with concrete data in a template is called **rendering a template**.
 
-To use the template, we will need to modify the code in `home.py`
+To use the template, we will need to modify the code in `home.py` as follows:
 
 ```python
 import random
@@ -243,6 +243,136 @@ There are two new elements you need to understand how this works:
 The template systems are sophisticated languages of their own, containing things like if conditions and loops. We will learn this language for the `jinja2` template system as we build more web servers.
 
 ### Creating web forms
-
-
+- To build our Fortune Teller app, we need to create a web form which asks the user for their name. In this section, we will learn how to create a web form, and then how to use the data collected in the form.
+- We will expand our app to two pages. 
+  - The home page will now ask the user for their name.
+  - The "fortune" page will greet the user by their name. We will add a fortune to this page in the next section.
   
+- To create forms we need to use a package called `Flask-WTF` (which is already present in our `requirements.txt`). The first step is to create a new class for which we will create a new file called `forms.py` inside our `fortune_teller` package. Here are its contents:
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+
+
+class NameForm(FlaskForm):
+    username = StringField('Name')
+    submit = SubmitField('See your fortune!')
+```
+
+- An object of `NameForm` will be passed to the template, which is then used by template to render the page. There is a lot of functionality that is also contained in the NameForm class:
+    - It knows how to create an appropriate HTTP request when someone submits a form.
+    - On the web, forms can be used to _attack_ a website. This class helps us protect from that.
+    - Even though we are not using it right now, it allows us to validate the data entered in the form.
+
+- To get all that functionality, we inherit from the class `FlaskForm`.
+- In our class, we create class variables which define what each field in the form is
+  - The `username` is a field where one can enter a string. It should be presented to the user with the label "Name".
+  - The `submit` field represents the form submit button. The button should say "See your fortune!".
+- Since we are creating class variables, it looks like that the data for username and submit will be the same for all objects. But that is not the case: Internally, FlaskForm creates a copy of `username` and `submit` for each instance and uses the class variables for the definition of field only.
+
+#### Creating a form template
+ 
+- We will create a new template which uses an object of type `NameForm` to render. 
+- We will call it `home.html`, since it will be shown as the home page of our web app. Here is what it looks like:
+
+```html
+<html>
+    <head>
+        <title>Fortune Teller</title>
+    </head>
+    <body>
+        <h2>Please enter your name</h2>
+        <form action="{{ url_for('show_fortune') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </body>
+</html>
+```
+
+- Let's focus on the section which begins with `<form>` and ends with `</form>`
+- HTML defines the <form> tag browsers understand and render as a form.
+
+- A form must define the `action` and the `method`:
+  - `action` is the URL path that the user to go to when the form is submitted. The data in the form is part of that request. We will understand what the function `url_for()` does shortly.
+  - `method` is the HTTP method to use when making that request. HTTP recommends that we use `POST` method when we are sending data to the web server.
+
+- Inside the form, we need to render two fields - `form.username` and `form.submit`.
+  - When we call the method `form.username()`, FlaskForm generates the HTML for that field. Same is true for the method `form.submit()`. These methods are created by FlaskForm internally.
+  - Note that the template can call a method (or function) to replace the placeholder with a string.
+  - We can access the label that we gave to a field using the `label` data attribute.
+
+- We have a field called `form.hidden_tag()` because it helps prevent a type of online attack called `CSRF attack`. For now, we will just follow this convention and not worry about security in this lecture.
+
+- The function `url_for()` is a helper function to generate a URL, in this case, using the _name_ of the view function. 
+- We will create a new view for showing the fortune, and name the corresponding view function `show_fortune`. `url_for()` will automatically check what URL path is that view mapped to, and use it to create the URL.
+- We will use this function in another context later.
+
+#### Rendering the form template
+
+Let's modify the `home.py` to render this template, as follows:
+
+```python
+from flask import render_template
+from fortune_teller import app, forms
+
+@app.route('/')
+def home():
+    form = forms.NameForm()
+
+    # The following two lines are for understanding forms, and are not used
+    # for the web app.
+    print(form.username())
+    print(form.submit())
+
+    return render_template('home.html', form=form)
+``` 
+ 
+- We create the `form` object using the `NameForm` class.
+- When we call `render_template`, we pass the form object to the template as expected.
+
+- I added two (temporary) print statements which show that exactly happens when the `username()` and `submit()` methods are called. If you see the output of your program, you will find the HTML for the form fields (`<input>` tags).
+
+#### The Fortune page
+- We now have to create a page which reads the data from this form and creates an appropriate greeting. To do that, we need a template and a view function. Let's begin with the template:
+
+```html
+<html>
+    <head>
+        <title>Fortune Teller</title>
+    </head>
+    <body>
+        <h2>Hello, {{ username }}!</h2>
+    </body>
+</html>
+``` 
+
+- In the view function we need to access the data that was entered into the form. To do that, we can use the `request` object that Flask provides.
+
+Here is how the code looks like:
+
+```python
+from flask import render_template, request
+from fortune_teller import app
+
+@app.route('/fortune', methods=['POST'])
+def show_fortune():
+    name = request.form['username']
+    return render_template('fortune.html', username=name)
+```
+
+- The `request` object has a dictionary attribute called `form`, which contains the data for the form fields. We are accessing the data for the field `username`.
+- Another thing to note is the `methods` argument to the `@app.route` decorator. By default, `app.route` assumes this method accepts a `GET` request only. But, in our case, we send a `POST` request to this URL from the form, so we must tell Flask that this view accepts `POST` requests.
+
+We are almost done. We only need to take care of a formality for form security purposes - add the following line in `__init__.py`. This creates a sort of password for your app.
+
+```python
+app.config['SECRET_KEY'] = 'very-hard-password'
+```
+
+Time to run it! Run the test server and see how it works.
