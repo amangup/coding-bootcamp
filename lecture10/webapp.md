@@ -343,7 +343,7 @@ def home():
 - I added two (temporary) print statements which show that exactly happens when the `username()` and `submit()` methods are called. If you see the output of your program, you will find the HTML for the form fields (`<input>` tags).
 
 #### The Fortune page
-- We now have to create a page which reads the data from this form and creates an appropriate greeting. To do that, we need a template and a view function. Let's begin with the template:
+- We now have to create a page which reads the data from this form and creates an appropriate greeting. To do that, we need a template and a view function. Let's begin with the template file `fortune.html`:
 
 ```html
 <html>
@@ -358,7 +358,7 @@ def home():
 
 - In the view function we need to access the data that was entered into the form. To do that, we can use the `request` object that Flask provides.
 
-Here is how the code looks like:
+Here is how the code file `show_fortune.py` looks like:
 
 ```python
 from flask import render_template, request
@@ -393,4 +393,118 @@ Time to run it! Run the test server and see how it works.
 
 - I have created a file called [fortunes.txt](https://github.com/amangup/coding-bootcamp/blob/master/lecture10/fortunes.txt) which contains a list of many fortunes, one per line.
 - **This part is left as an exercise**: Use this file and display a random fortune to the user.
+
+### Static files
+
+Let's spruce up our web app a bit. First, let's display an image on the home page.
+
+To do that, we need to understand how does a web server serve static file.
+- The browser makes a GET request for a static file like any other GET request
+- The web server should understand that this request is for a file, and it has to send back that file in response.
+- Flask supports this behaviour.
+
+#### Showing images
+
+- First we need an image. I found this image called `cookie_rich.jpg` using Google Search, which I am going to use:
+
+![Fortune Cookie](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture10/examples/fortune_teller_webapp/fortune_teller/static/cookie_rich.jpg)
+
+- We need to copy this file in a folder called `static`. Here is how the directory structure looks now:
+
+```
+requirements.txt
+webapp/
+       test_server.py
+       fortune_teller/
+                      templates/
+                                hello_world.html
+                                fortune.html
+                      static/
+                                cookie_rich.jpg
+                      __init__.py
+                      home.py
+                      show_fortune.py
+                      forms.py
+```
+
+To display the image, we just need to add the following line inside `home.html` template:
+
+```html
+<img src="{{ url_for('static', filename='cookie_rich.jpg') }}" width="300"/>
+```
+
+- The HTML `img` tag is used to display images.
+- The `src` tag contains the URL at which image can be found
+- We use the `url_for()` function to create that URL.
+  - Flask has a convention where the directory named `static` can be used to serve static files. It will not work if you rename the directory to something else.
+  - If you call the function `url_for` as shown above, it creates the appropriate url for the image.
+
+- The width tag is just to make the size of the image a bit smaller.
+
+You can now see the image (whatever you chose) on the home page of your web app.
+
+#### Showing the fortune in style
+
+We are going to use CSS (Cascading Style Sheets)to beautify the look of how the fortune is displayed. For that, we need appropriate CSS code. I found the following code online, and copied this into a file called `quote.css`, and copied it into the `static` directory. I have almost no idea how this CSS works!
+
+```
+/* From https://www.kirstencassidy.com/css-fancy-quotes/ */
+
+.quotation{
+  font-size: 30px;
+  //margin: 0 auto;
+  quotes: "\201C""\201D""\2018""\2019";
+  padding: 10px 20px;
+  line-height: 1.4;
+}
+
+.quotation:before {
+  content: open-quote;
+  display: inline;
+  height: 0;
+  line-height: 0;
+  left: -10px;
+  position: relative;
+  top: 30px;
+  color: #ccc;
+  font-size: 3em;
+}
+.quotation::after {
+  content: close-quote;
+  display: inline;
+  height: 0;
+  line-height: 0;
+  left: 10px;
+  position: relative;
+  top: 35px;
+  color: #ccc;
+  font-size: 3em;
+}
+```
+
+Again, we only need to change the template (this time, `fortune.html`). Here is how my `fortune.html` template looks like:
+
+```html
+<html>
+    <head>
+        <title>Fortune Teller</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='quote.css') }}">
+    </head>
+    <body>
+        <h2>Hello, {{ username }}!</h2>
+        <br>
+         <div class="quotation">
+             {{ fortune_text }}
+         </div>
+    </body>
+</html>
+```
+
+- To link CSS to your HTML file, we use the `link` HTML tag. 
+- We need to tell the `link` tag where to find the file containing the CSS code. We use the `url_for()` function in exactly the same way we used it to display the image above.
+- The tag in which we put the quotation (I use `div` by default), we add `class="quotation"` to refer to the CSS class `quotation` that is created in the CSS code.
+
+
+
+
 
