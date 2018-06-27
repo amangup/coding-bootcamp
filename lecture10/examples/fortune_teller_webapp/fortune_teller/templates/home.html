@@ -3,6 +3,7 @@
         <title>Fortune Teller</title>
     </head>
     <body>
+        <img src="{{ url_for('static', filename='cookie_rich.jpg') }}" width="300"/>
         <h2>Please enter your name</h2>
         <form action="{{ url_for('show_fortune') }}" method="POST">
             {{ form.hidden_tag() }}
