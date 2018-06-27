@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <title>Fortune Teller</title>
+    </head>
+    <body>
+        <h2>Please enter your name</h2>
+        <form action="{{ url_for('show_fortune') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </body>
+</html>

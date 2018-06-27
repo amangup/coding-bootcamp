@@ -1,0 +1,13 @@
+<html>
+    <head>
+        <title>Fortune Teller</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='blockquote.css') }}">
+    </head>
+    <body>
+        <h2>Hello, {{ username }}!</h2>
+        <br>
+         <blockquote><p class="quotation">
+             {{ fortune_text }}
+         </blockquote>
+    </body>
+</html>
