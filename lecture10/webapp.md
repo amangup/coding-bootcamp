@@ -402,6 +402,7 @@ To do that, we need to understand how does a web server serve static file.
 - The browser makes a GET request for a static file like any other GET request
 - The web server should understand that this request is for a file, and it has to send back that file in response.
 - Flask supports this behaviour.
+    - Though the Flask supports this, it is very rudimentary. This is because production websites use CDNs (Content Delivery Network) to store and serve static files. Doing that is out of the scope of this bootcamp.
 
 #### Showing images
 
@@ -504,7 +505,34 @@ Again, we only need to change the template (this time, `fortune.html`). Here is 
 - We need to tell the `link` tag where to find the file containing the CSS code. We use the `url_for()` function in exactly the same way we used it to display the image above.
 - The tag in which we put the quotation (I use `div` by default), we add `class="quotation"` to refer to the CSS class `quotation` that is created in the CSS code.
 
+## Deploying your app on pythonanywhere.com
+
+- We have created a fun website, and we obviously want to share it with our friends!
+- To do that, we need to host our web app on a hosting platform.
+- We are going to use [pythonanywhere.com](https://www.pythonanywhere.com/) to host our web app.
+  - It has a free level of service which is good enough for our purposes
+  - It is compatible with Flask apps, and thus it's pretty easy to get our app running there.
+  
+Here is the list of instructions to deploy your fortune teller website there:
+
+1. Create a Beginner account at pythonanywhere.com, and log in.
+2. On your computer, create a zip file which contains the directory `fortune_teller`. Do not include `test_server.py`.
+3. On pythonanywhere.com, go to your Dashboard -> Files -> Browse Files. You should see that you are in the directory `/home/<your username>`.
+4. Using `Upload a file`, upload the zip archive that you just created. You should see that file in the list of files.
+5. On top of the listings, there is a link called "Open Bash console here". It opens a terminal.
+6. Once the terminal is running (you should see a `$` prompt), run the command `unzip fortune_teller.zip`. That will unzip the files for your web app.
+7. On the top right, click on the tribar icon, and select "Web".
+8. Click on `Add a new web app`. Click next until you reach "Select a Python Web framework".
+9. Select "Flask", and then select Python 3.6. When it asks you the path where to create the flask app, just choose default (we will not use that.)
+10. Eventually, you should see the "configuration" page for your web app. Click on Code -> WSGI configuration file: (starts with `/var/www`).
+11. You are now editing a python file. Change `project_home` path to `u/home/<your username>/fortune_teller`
+12. In the last line, change `flask_app` to `fortune_teller`.
+
+That's it! You now have a fortune teller website running at `<your username>.pythonanywhere.com` (might need a refresh or two to show your web app). 
 
 
+### WSGI
+
+You might be curious on how the website is running even though we didn't upload `test_server.py` and call `app.run()`. Python anywhere runs its own web server. To communicate with your app, it uses a Python interface called WSGI (Web Server Gateway Interface). Flask complies with this specification. Thus, python anywhere's server can interact with our Flask app and make the website run.
 
 
