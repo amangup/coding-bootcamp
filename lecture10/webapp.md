@@ -191,6 +191,7 @@ webapp/
 Here is what the file `hello_world.html` will contain:
 
 ```html
+<!doctype html>
 <html>
     <head>
         <title>Hello</title>
@@ -281,6 +282,7 @@ class NameForm(FlaskForm):
 - We will call it `home.html`, since it will be shown as the home page of our web app. Here is what it looks like:
 
 ```html
+<!doctype html>
 <html>
     <head>
         <title>Fortune Teller</title>
@@ -346,6 +348,7 @@ def home():
 - We now have to create a page which reads the data from this form and creates an appropriate greeting. To do that, we need a template and a view function. Let's begin with the template file `fortune.html`:
 
 ```html
+<!doctype html>
 <html>
     <head>
         <title>Fortune Teller</title>
@@ -495,6 +498,7 @@ For that, we need appropriate CSS code. I found the following code online, put t
 Again, we only need to change the template (this time, `fortune.html`). Here is how my `fortune.html` template looks like:
 
 ```html
+<!doctype html>
 <html>
     <head>
         <title>Fortune Teller</title>
@@ -538,7 +542,6 @@ Here is the list of instructions to deploy your fortune teller website there:
 12. In the last line, change `flask_app` to `fortune_teller`.
 
 That's it! You now have a fortune teller website running at `<your username>.pythonanywhere.com` (might need a refresh or two to show your web app). 
-
 
 ### WSGI
 
