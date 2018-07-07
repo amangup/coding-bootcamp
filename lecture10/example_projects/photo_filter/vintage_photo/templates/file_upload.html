@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+    <body>
+        <h2>Please select the file to upload:</h2>
+        <form method="POST" enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.file_path.label }}<br>
+                {{ form.file_path() }}
+            </p>
+            <p>{{ form.upload() }}</p>
+        </form>
+    </body>
+</html>
