@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
 
 
 class NameForm(FlaskForm):
-    username = StringField('Name', validators=[DataRequired()])
+    username = StringField('Name')
     submit = SubmitField('See your fortune!')

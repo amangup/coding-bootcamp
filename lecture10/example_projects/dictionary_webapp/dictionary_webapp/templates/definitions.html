@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+    <title>Definition for {{ word_details.word }}</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+    <div style="padding: 25px 50px 25px 50px;">
+    <h1>{{ word_details.word }}</h1>
+    <h2><i>{{ word_details.language }}</i></h2>
+    <br>
+    {% for definition in word_details.definitions %}
+    <div style="padding: 10px 0px 10px 0px;">
+    <div class="w3-card-4" style="padding: 25px 50px 25px 50px;">
+    <i>({{ definition.lexicalCategory }})</i>
+    <br>
+        {% for domain in definition.domains %}
+        <b> {{ domain }} </b>
+        {% endfor %}
+
+    <br>
+        {% if definition.definitions %}
+            {% for definition in definition.definitions %}
+            {{ definition }}<br>
+            {% endfor %}
+        {% endif %}
+    <br>
+        {% if definition.examples %}
+            Examples:
+            <ol>
+            {% for example in definition.examples %}
+            <li>{{ example }}</li>
+            {% endfor %}
+            </ol>
+        {% endif %}
+    </div></div>
+    {% endfor %}
+    </div>
+
+</body>
+</html>

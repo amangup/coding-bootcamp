@@ -3,7 +3,7 @@ import random
 from flask import render_template, request
 from fortune_teller import app, fortune_list, forms
 
-@app.route('/fortune', methods=['GET', 'POST'])
+@app.route('/fortune', methods=['POST'])
 def show_fortune():
     name = request.form['username']
     fortune = fortune_list[random.randint(0, len(fortune_list) - 1)]

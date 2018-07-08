@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Dictionary Online</title>
+    </head>
+    <body>
+        <h2>Please enter the word</h2>
+        <form action="{{ url_for('dictionary_home') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.word.label }}<br>
+                {{ form.word(size=32) }}
+            </p>
+            <p>
+                {{ form.language.label }}<br>
+                {{ form.language() }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </body>
+</html>
