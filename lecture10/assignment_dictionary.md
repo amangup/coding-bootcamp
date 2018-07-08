@@ -1,11 +1,12 @@
 ## Assignment: Dictionary website
 
-In this assignment, you are going to create a website which asks user for a word and shows all the definitions of that word. To get the definitions, we are going to use a service exposed by the Oxford Dictionaries team.
+In this assignment, you are going to create a website which asks user for a word and shows all the definitions of that word. To get the definitions, we are going to use a service created by the Oxford Dictionaries team.
 
 On top of lecture 10, you will need to learn a few more things to be able to finish this assignment:
 - Using a Oxford Dictionaries RESTful API service
 - Understand what JSON it and parse it
 - Learn how to do URL redirection
+- `if` statements and `for` loops in HTML templates
 
 Let's get started.
 
@@ -106,6 +107,29 @@ You will also need to make sure that the form's submit url is the home page of y
 <form action="{{ url_for('home') }}" method="POST">
 ```
 
+### `if` and `for` statements in HTML templates
 
+The `jinja2` template system allows you to use to use `for` and `if` control statements inside HTML templates. This is useful for this assignment 
 
-  
+- a word can have many definitions, and you need for loops inside the template to create an HTML for all of those.
+- Some word definitions have example sentences, others not. You will need `if` statements do check if they are present, and show them if they are.
+
+They are implemented in a very convenient manner. For example, this is how `for` statement works, when you pass `alist` to the template:
+
+```html
+{% for item in alist %}
+<b>item</b>
+<% endfor %}
+```
+
+- Note that the for condition is written exactly as you would in Python. The tag `<b>` makes the text bold.
+
+Here is how the `if` statement works:
+
+```html
+{% if definitions %}
+<!-- Use definitions variable here -->
+{% endif %}
+```
+
+The detailed documentation is [here](http://jinja.pocoo.org/docs/2.10/templates/#list-of-control-structures).
