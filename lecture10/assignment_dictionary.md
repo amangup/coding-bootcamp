@@ -56,7 +56,7 @@ JSON stands for **JavaScript Object Notation** and it's a string data format. It
 
 For this assignment, you will need to understand JSON well.
 
-- Here is an article which explains what JSON is: [Working with JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON).
+- Here is an article which explains what JSON is: [Working with JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON). You don't need to do the "Active Learning" section, as it uses Javascript.
 - A great reference: [https://www.json.org/](https://www.json.org/)
 
 In Python, the `json` module is used to parse a JSON string, and returns an object representing the JSON data (if the JSON string represents a list, you will get a list, if it's an key:value object, you will get a dictionary, etc). Note that for this exercise, you don't really have to parse JSON - the return value of `r.json()` (see snippet in the previous section) is a dictionary object which you can use straightaway (`r.json()['results']` gives you value for the key `results`, which is a list of dictionaries itself.)
@@ -67,7 +67,7 @@ You will have to spend some time and effort to figure out how to extract what yo
 
 URL redirection means that when you go to an URL on your browser, that URL automatically redirects you to another one without your input. This can be useful to make your dictionary website better, but it's optional.
 
-In a dictionary website, it would be desirable to allow users to go to an URL like: `www.mydictionary.com/definitions/mushroom` and get the definition of the word mushroom. This allows users to bookmark pages, share URLs, and the output is the same for all users at any time. Note that our fortune teller website doesn't support that - in fact, if use went to the `/fortune` path without using the form on the home page, it would give an error.
+In a dictionary website, it would be desirable to allow users to go to an URL like: `www.mydictionary.com/definitions/mushroom` and get the definition of the word mushroom. This allows users to bookmark pages, share URLs, and the output is the same for all users at any time. Note that our fortune teller website doesn't support that - in fact, if the user went to the `/fortune` path without using the form on the home page, it would give an error.
 
 To do that, we need to do two things:
 
