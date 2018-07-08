@@ -51,7 +51,6 @@ def get_word_details(word, language):
 
     region = '/regions=us' if language is 'en' else ''
     rest_url = URL_FORMAT.format(language, word.lower(), region)
-    print (rest_url)
     response = requests.get(rest_url,
                             headers={'app_id': APP_ID, 'app_key': APP_KEY})
 
@@ -59,7 +58,6 @@ def get_word_details(word, language):
         return None
 
     dict_json = response.json()
-    print (dict_json)
 
     definitions = []
 
