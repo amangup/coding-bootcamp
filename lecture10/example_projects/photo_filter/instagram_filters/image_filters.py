@@ -27,7 +27,7 @@ def vivid(image_filename, output_path):
     with Image(filename=image_filename) as image:
         image.contrast_stretch(black_point=0.05, white_point=0.95,
                                channel='all_channels')
-        image.linear_stretch(black_point=0.05, white_point=0.95)
+        image.modulate(brightness=100, saturation=150, hue=100)
         image.unsharp_mask(radius=1.5, amount=200, threshold=0.2, sigma=0.5)
         image.save(filename=output_path)
 
