@@ -416,7 +416,7 @@ To do that, we need to understand how does a web server serve static files.
 
 - First we need an image. I found this image called `cookie_rich.jpg` using Google Search, which I am going to use:
 
-![Fortune Cookie](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture10/examples/fortune_teller_webapp/fortune_teller/static/cookie_rich.jpg)
+![Fortune Cookie](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture10/example_projects/fortune_teller_webapp/fortune_teller/static/cookie_rich.jpg)
 
 - We need to copy this file in a folder called `static`. Here is how the directory structure looks now:
 
@@ -540,7 +540,7 @@ from fortune_teller import home, show_fortune
 ```
 
 - We have created a function called `initialize()` which we expect users will call before running the app.
-- Flask provides a helper method called `from_object()` which reads from an object.
+- Flask provides a helper method called `from_object()` which reads the configuration from an object.
 
 In our case, the _user_ of app is the `debug_server.py` file. Let's see how that is updated:
 
@@ -563,7 +563,7 @@ if __name__ == '__main__':
 ```
 
 - In the import statement, we also import the `initialize` function
-- We create a class called Config and define the all the configuration parameters. When Flask reads from this object, it uses the variable names to be the _key_ in the `app.config` dictionary.
+- We create a class called `Config` and define the all the configuration parameters as class variable inside it. When Flask reads from this object, it uses the variable names to be the _key_ in the `app.config` dictionary.
 - Before calling `app.run()`, we call `initialize()` with an object of the `Config` class.
 - You will note there is a config variable called `FORTUNES_FILEPATH` which I have used to tell my webapp where that file is located. The location in the listing above works on my laptop, but will not work on the hosting platform.
 
@@ -571,26 +571,26 @@ This approach will be useful immediately in the next section.
 
 ## Deploying your app on pythonanywhere.com
 
-- We have created a fun website, and we obviously want to share it with our friends!
-- To do that, we need to host our web app on a hosting platform.
+- We have created a fun website, and we obviously want to share it with our friends.
+- To do that, we need to host our web app on a _hosting platform_.
 - Hosting platforms allow us to run their webapps on their servers online, and they charge users for this service.
 - We are going to use [pythonanywhere.com](https://www.pythonanywhere.com/) to host our web app.
-  - It has a free level of service which is good enough for our this purpose.
+  - It has a free level of service which is good enough to deploy our fortune teller webapp.
   - It is compatible with Flask apps, thus it's pretty easy to get our app running there.
   
 Here is the list of instructions to deploy your fortune teller website there:
 
 1. Create a Beginner account at pythonanywhere.com, and log in.
-2. On your computer, create a zip file which contains the directory `fortune_teller`. Do not include `debug_server.py`.
+2. On your computer, create a zip file `fortune_teller.zip` which contains the directory `fortune_teller`. Do not include `debug_server.py`.
 3. On pythonanywhere.com, go to your Dashboard -> Files -> Browse Files. You should see that you are in the directory `/home/<your username>`.
 4. Using `Upload a file`, upload the zip archive that you just created. You should see that file in the list of files.
-5. On top of the listings, there is a link called "Open Bash console here". It opens a terminal.
+5. On top of the file lists, there is a link called "Open Bash console here". It opens a terminal.
 6. Once the terminal is running (you should see a `$` prompt), run the command `unzip fortune_teller.zip`. That will unzip the files for your web app.
 7. On the top right, click on the tribar icon, and select "Web".
 8. Click on `Add a new web app`. Click next until you reach "Select a Python Web framework".
 9. Select "Flask", and then select Python 3.6. When it asks you the path where to create the flask app, just choose the default (we will not use that).
 10. Eventually, you should see the "configuration" page for your web app. Click on Code -> WSGI configuration file: (starts with `/var/www`).
-11. You are now editing a python file. We are going to change it change it make the directory path to point to our application (assign `project_home` path to `u/home/<your username>/fortune_teller`), update the app name (change `flask_app` to `fortune_teller`), and pass configuration to our app. 
+11. You are now editing a python file. We are going to change it change it make the directory path to point to our application (assign `project_home` path to `/home/<your username>/fortune_teller`), update the app name (change `flask_app` to `fortune_teller`), and pass configuration to our app. 
 
 Here is how an example WSGI file looks like (only relevant section is shown):
 
@@ -612,12 +612,12 @@ initialize(Config())
 - I copied the 'fortunes.txt' file to the `/var/www/` directory on pythonanywhere, and then used that path for the `FORTUNES_FILEPATH` config variable.
 
 - After you're done with the changes, you should click on "Reload <your web address>" button on the "Web" tab on pythonanywhere.com
-- If something is going wrong, you can look at Logs -> Error Logs on the same page.
+- If something is going wrong, you can look at the link: "Logs -> Error Logs" on the same page.
 
 That's it! You now have a fortune teller website running at `<your username>.pythonanywhere.com`.
 
 
 ### WSGI
 
-You might be curious on how the website is running even though we didn't upload `debug_server.py` and call `app.run()`. Python anywhere runs its own web server. To communicate with your app, it uses a Python interface called WSGI (Web Server Gateway Interface). Flask complies with this specification. Thus, python anywhere's server can interact with our Flask app and make the website run.
+You might be curious on how the website is running even though we didn't upload `debug_server.py` and call `app.run()`. Python anywhere runs its own web server. To communicate with your app, it uses a Python interface called **WSGI (Web Server Gateway Interface)**. Flask complies with this specification. Thus, python anywhere's server can interact with our Flask app and make the website run.
 
