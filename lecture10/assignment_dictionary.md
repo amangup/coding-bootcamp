@@ -77,7 +77,7 @@ The URL rules in Flask can have variable names. [This link](http://flask.pocoo.o
 
 2. When the user types a word and submits the form (on your website's home page), you will have to read the word user entered, and then _redirect_ to the link as shown above.
 
-Let's say, you implemented `definitions` URL handler as follows:
+Let's say, you implemented `definitions` view function as follows:
 
 ```python
 @app.route('/definitions/<word>')

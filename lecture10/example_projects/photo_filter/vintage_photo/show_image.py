@@ -1,5 +1,3 @@
-import os
-
 from flask import send_from_directory
 
 from vintage_photo import app, get_save_folder

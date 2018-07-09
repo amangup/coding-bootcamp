@@ -21,7 +21,7 @@ def file_upload():
         if file and '.' in file.filename:
             extension = get_extension(file.filename)
             if allowed_extension(extension):
-                hash_id = secrets.token_hex(8)
+                hash_id = secrets.token_urlsafe(8)
 
                 save_folder = get_save_folder(hash_id)
                 os.mkdir(save_folder)
