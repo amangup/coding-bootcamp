@@ -3,13 +3,7 @@ import os
 from flask import Flask
 from instagram_filters import image_filters
 
-UPLOAD_FOLDER = 'E:\\uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'very-hard-password'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 
 filters = [(image_filters.cross_process, "cross_process", "Cross Processed"),
            (image_filters.aged_photo, "aged_photo", "Aged Photo"),
@@ -17,6 +11,8 @@ filters = [(image_filters.cross_process, "cross_process", "Cross Processed"),
            (image_filters.bw_punch, "bw_punch", "Black & White Punch"),
            (image_filters.vignette, "vignette", "Vignette")]
 
+def initialize(config):
+    app.config.from_object(config)
 
 def get_save_folder(hash_id):
     return os.path.join(app.config['UPLOAD_FOLDER'], hash_id)
