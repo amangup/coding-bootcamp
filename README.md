@@ -6,6 +6,52 @@ This bootcamp **uses Python as the language of choice** to introduce programming
 
 The material is organized by lecture. The Readme inside every lecture directory contains the details about that lecture.
 
+# The Syllabus
+This the list of topics we discuss in the lecture series. 
+- All lectures after the first one has a set of assignments.
+- Some lectures are long and cannot be covered in one bootcamp class. Thus, it takes more classes than the number of lectures to go through them.
+
+The lectures are designed to teach enough Python for one to be able to write meaningful real life applications themselves. The final project is to create a web app which is an online E-book reader. I will also discuss the ways you can use this learning to become a professional programmer in the last lecture.
+
+Currently, the first bootcamp session is not complete, and thus more lectures will be created in the following weeks. I will keep updating this page when new lectures get added.
+
+### Lecture 1 - What is programming?
+The first lecture introduces what a computer is, and what programming is. In the class, we also write our first little program.
+
+### Lecture 2 - Variables and Expressions
+In this lecture we start learning Python, by understanding what a variable is, and how we can use constants and variables in expressions. We learn about the basic data types built into Python.
+
+### Lecture 3 - If statements and while loops
+We look at conditional logic in this lecture. Based on certain criteria, we can execute some code but not other (using `if` statements) or execute the same code numerous times (using `while` statements).
+
+### Lecture 4 - Functions and recursion
+The concept of _functions_ is introduced, which is used to modularize the code. We also discuss the topic of recursion using functions, and learn how it can be used to solve some interesting problems.
+
+### Lecture 5 - Collection data types and for loops
+We start looking at more advanced datatypes; specifically we learn about types which can store a collection of data. That allows me to also introduce the `for` loop statement, which makes writing loops easier.
+
+As an application of what've learnt till now, we do some data analysis on real life data. We use the data from California Public School system to gain insights about the system (like what is the average student:teacher ratio)
+
+### Lecture 6 - Algorithms
+We discuss a computer science topic - Algorithms. We define what an Algorithm is, look at some fundamental algorithms in computer science, and understand what it means for an algorithm to be good by using the measure of Time Complexity.
+
+### Lecture 7 - Python Modules
+This is a shorter lecture where we discuss Python _modules_. Modules are useful to package a bunch of code and share it with others. We will learn how to create our own modules and to use Python's built in modules and third party modules.
+
+Assignments to this lecture are some of my favorite.
+
+### Lecture 8 - Object Oriented Programming
+We cover the topic of Object Oriented Programming (OOP), and learn how to do write that style of programs in Python. This is a very fundamental concept without which it is practically impossible to work on any real life application.
+
+### Lecture 9 - Internet and the World Wide Web
+We take a break from programming and learn how the Internet and the World Wide Web works. It sets us up for the next lectures, which are all about creating web sites using Python.
+
+### Lecture 10 - Web App development using Flask
+In this lecture we will learn how to create websites using a popular Python web development framework called Flask. The lecture is a tutorial in which we create a Fortune teller app that shows the user a random _fortune_. 
+
+The assignments make you develop a few more interesting websites, and you'll also learn some very important concepts while doing them (like REST APIs, JSON, etc.)
+
+
 # Installing Python on your computer
 
 Follow the instructions below to install Python interpreter and PyCharm Integrated Development Environment on your computer.
@@ -15,7 +61,7 @@ Follow the instructions below to install Python interpreter and PyCharm Integrat
 
 1. Download the Python executable installer, which is labeled **Windows x86-64 executable installer** from here: https://www.python.org/downloads/release/python-365/
 
-2. Run the downloaded file (may need previliges).
+2. Run the downloaded file (may need privileges).
 
 ### Installing PyCharm
 
@@ -31,7 +77,7 @@ Follow the instructions below to install Python interpreter and PyCharm Integrat
 
 1. Download the Python executable installer, which is labeled **macOS 64-bit installer** from here: https://www.python.org/downloads/release/python-365/
 
-2. Run the downloaded file (may need previliges).
+2. Run the downloaded file (may need privileges).
 
 ### Installing PyCharm
 
@@ -53,7 +99,7 @@ sudo apt-get install python3.6
 ```
 Enter your password when asked.
 
-2. Run `python3 -V` to check verify python is working.
+2. Run `python3 -V` to verify python is working.
 
 ### Installing PyCharm
 
