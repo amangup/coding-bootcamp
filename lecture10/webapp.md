@@ -521,50 +521,33 @@ Again, we only need to change the template (this time, `fortune.html`). Here is 
 ### Configuration
 When you create web servers, there is a lot of configuration parameters which can change. For example, in the fortune teller webapp, one such parameter is the file path of `fortunes.txt`. On your computer, you might have stored that at some location, but when you run it somewhere else (like on a hosting platform, as discussed in next section), that file might be stored somewhere else.
 
-To make it easier to run your app with different configs, we are going to:
-- Define the config outside the web app.
-- Make your app read configuration from an argument.
+To make it easier to run your app with different configs, we are going to define a `Config` class _outside_ the web app, and make your webapp use that.
 
 In the `__init__.py`, let's change the code to the following:
 
 ```python
 from flask import Flask
+from config import Config
 
 app = Flask(__name__)
-
-def initialize(config):
-    app.config.from_object(config)
-
+app.config.from_object(Config)
 
 from fortune_teller import home, show_fortune
 ```
 
-- We have created a function called `initialize()` which we expect users will call before running the app.
 - Flask provides a helper method called `from_object()` which reads the configuration from an object.
+- Note that we are importing the `Config` class from a module called config. Let's write that.
 
-In our case, the _user_ of app is the `debug_server.py` file. Let's see how that is updated:
+The `config.py` is located inside the `webapp` directory, but outside the `fortune_teller` directory, i.e., the same directory as `debug_server.py`.
+
 
 ```python
-from fortune_teller import app, initialize
-
-
 class Config:
     SECRET_KEY = 'very-hard-password'
     FORTUNES_FILEPATH = '/home/aman/fortunes.txt'
-
-
-def main():
-    initialize(Config())
-    app.run(host='127.0.0.1', port=8080, debug=True)
-
-
-if __name__ == '__main__':
-    main()
 ```
 
-- In the import statement, we also import the `initialize` function
 - We create a class called `Config` and define the all the configuration parameters as class variable inside it. When Flask reads from this object, it uses the variable names to be the _key_ in the `app.config` dictionary.
-- Before calling `app.run()`, we call `initialize()` with an object of the `Config` class.
 - You will note there is a config variable called `FORTUNES_FILEPATH` which I have used to tell my webapp where that file is located. The location in the listing above works on my laptop, but will not work on the hosting platform.
 
 This approach will be useful immediately in the next section.
@@ -581,35 +564,42 @@ This approach will be useful immediately in the next section.
 Here is the list of instructions to deploy your fortune teller website there:
 
 1. Create a Beginner account at pythonanywhere.com, and log in.
-2. On your computer, create a zip file `fortune_teller.zip` which contains the directory `fortune_teller`. Do not include `debug_server.py`.
+2. On your computer, create a zip file `webapp.zip` which contains the directory `webapp`.
 3. On pythonanywhere.com, go to your Dashboard -> Files -> Browse Files. You should see that you are in the directory `/home/<your username>`.
 4. Using `Upload a file`, upload the zip archive that you just created. You should see that file in the list of files.
 5. On top of the file lists, there is a link called "Open Bash console here". It opens a terminal.
-6. Once the terminal is running (you should see a `$` prompt), run the command `unzip fortune_teller.zip`. That will unzip the files for your web app.
+6. Once the terminal is running (you should see a `$` prompt), run the command `unzip webapp.zip`. That will unzip the files for your web app.
 7. On the top right, click on the tribar icon, and select "Web".
 8. Click on `Add a new web app`. Click next until you reach "Select a Python Web framework".
 9. Select "Flask", and then select Python 3.6. When it asks you the path where to create the flask app, just choose the default (we will not use that).
 10. Eventually, you should see the "configuration" page for your web app. Click on Code -> WSGI configuration file: (starts with `/var/www`).
-11. You are now editing a python file. We are going to change it change it make the directory path to point to our application (assign `project_home` path to `/home/<your username>/fortune_teller`), update the app name (change `flask_app` to `fortune_teller`), and pass configuration to our app. 
+11. You are now editing a python file. We are going to change it change it make the directory path to point to our application (assign `project_home` path to `/home/<your username>/webapp`) and update the app name (change `flask_app` to `fortune_teller`).
 
 Here is how an example WSGI file looks like (only relevant section is shown):
 
 ```python
-path = '/home/amangup/fortune_teller'
+path = '/home/amangup/webapp'
 if path not in sys.path:
     sys.path.append(path)
 
+from fortune_teller import app as application
+from fortune_teller import initialize
+initialize()
+``` 
+
+- Note that I am importing a function called `initialize` from `fortune_teller` and calling it here. This function has not been shown before, and in my code, that function reads the fortune texts into a list.
+
+We need one final change before your app runs: The file path for `fortunes.txt` needs to change in `config.py`, because on pythoanywhere it will not be located at the same path as on your laptop.
+
+```python
 class Config:
     SECRET_KEY = '1Fzm6vxo34@OMU3g'
     FORTUNES_FILEPATH = '/var/www/fortunes.txt'
+```
 
-from fortune_teller import app as application
-from fortune_teller import initialize
-initialize(Config())
-``` 
-
+- I copied the file `fortunes.txt` to the `/var/www/` directory on pythonanywhere, and then used that path for the `FORTUNES_FILEPATH` config variable.
 - I replaced the `SECRET_KEY`'s value to something which is a really a password. Before deploying your website such that it is accessible to public, you should do that as well.
-- I copied the 'fortunes.txt' file to the `/var/www/` directory on pythonanywhere, and then used that path for the `FORTUNES_FILEPATH` config variable.
+
 
 - After you're done with the changes, you should click on "Reload <your web address>" button on the "Web" tab on pythonanywhere.com
 - If something is going wrong, you can look at the link: "Logs -> Error Logs" on the same page.

@@ -1,9 +1,11 @@
 import os
 
 from flask import Flask
+from config import Config
 from instagram_filters import image_filters
 
 app = Flask(__name__)
+app.config.from_object(Config)
 
 filters = [(image_filters.cross_process, "cross_process", "Cross Processed"),
            (image_filters.aged_photo, "aged_photo", "Aged Photo"),
@@ -11,8 +13,6 @@ filters = [(image_filters.cross_process, "cross_process", "Cross Processed"),
            (image_filters.bw_punch, "bw_punch", "Black & White Punch"),
            (image_filters.vignette, "vignette", "Vignette")]
 
-def initialize(config):
-    app.config.from_object(config)
 
 def get_save_folder(hash_id):
     return os.path.join(app.config['UPLOAD_FOLDER'], hash_id)
