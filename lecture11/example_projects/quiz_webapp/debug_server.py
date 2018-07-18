@@ -1,4 +1,4 @@
-from quiz_app import app
+from quiz import app
 
 
 def main():

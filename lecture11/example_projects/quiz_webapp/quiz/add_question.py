@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for
-from quiz_app import app, db, forms
-from quiz_app import db_tables
+from quiz import app, db, forms
+from quiz import db_tables
 
 
 @app.route('/add_question', methods=['GET', 'POST'])

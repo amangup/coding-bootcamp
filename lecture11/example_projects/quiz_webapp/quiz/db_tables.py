@@ -1,4 +1,4 @@
-from quiz_app import db
+from quiz import db
 
 
 class Question(db.Model):
