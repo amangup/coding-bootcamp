@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+</head>
+<body>
+    <h1>Your score is {{ score }}/{{ questions|length }}</h1>
+    <p>
+        {% for question in questions %}
+        <p>
+        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+        <p>
+        Options:<br>
+        <ol type="A">
+            <li>{{ question.option_a }}</li>
+            <li>{{ question.option_b }}</li>
+            <li>{{ question.option_c }}</li>
+            <li>{{ question.option_d }}</li>
+        </ol>
+        <p>
+        Your answer: {{ answers[loop.index0] }}
+        {% endfor %}
+        </p>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+</head>
+    <h1>Quiz:</h1>
+    <p>
+    <form action="{{ url_for('quiz') }}" method="POST">
+        {% for question in questions %}
+        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+        <p>
+        Options:<br>
+        <ol type="A">
+            <li>{{ question.option_a }}</li>
+            <li>{{ question.option_b }}</li>
+            <li>{{ question.option_c }}</li>
+            <li>{{ question.option_d }}</li>
+        </ol>
+        <p>
+        Choose your answer:<br>
+        {{ form.answers.entries[loop.index0]() }}
+        {% endfor %}
+        </p>
+
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
