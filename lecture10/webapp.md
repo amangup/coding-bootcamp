@@ -609,5 +609,5 @@ That's it! You now have a fortune teller website running at `<your username>.pyt
 
 ### WSGI
 
-You might be curious on how the website is running even though we didn't upload `debug_server.py` and call `app.run()`. Python anywhere runs its own web server. To communicate with your app, it uses a Python interface called **WSGI (Web Server Gateway Interface)**. Flask complies with this specification. Thus, python anywhere's server can interact with our Flask app and make the website run.
+You might be curious on how the website is running even though we are not calling `app.run()` anywhere. Pythonanywhere.com runs its own web server. To communicate with your app, it uses a Python interface called **WSGI (Web Server Gateway Interface)**. Flask complies with this specification. Thus, python anywhere's server can interact with our Flask app and make the website run.
 
