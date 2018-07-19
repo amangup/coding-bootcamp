@@ -180,6 +180,6 @@ The use case for this app is similar: When the user sees a slideshow, we want to
 Here are some more tips on how to do this well for this assignment:
 
 - Save images on a new random folder every time the user uploads one (and the filtered output images). You can generate the folder name using the [python module `secrets`](https://docs.python.org/3/library/secrets.html) (use the `token_urlsafe()` function). This can be used to create a link like `http://myapp.com/slideshow/<random_token>`.
-- The process to manipulate images is CPU heavy, and it is wasteful to do that every time the user opens the `slideshow` view. To solve this issue, you can use double redirection: The file upload view redirects to a temporary view `apply_filters` (that applies filters and stores the resulting images), which redirects to the `slideshow` view when it redirects (which just creates a slideshow of existing images). When an user returns to the `slideshow` link later on, the filtered images already exist.
+- The process to manipulate images is CPU heavy, and it is wasteful to do that every time the user opens the `slideshow` view. To solve this issue, you can use double redirection: The file upload view redirects to a temporary view `apply_filters` (that applies filters and stores the resulting images), which redirects to the `slideshow` view when it finishes applying filters. When an user returns to the `slideshow` link later on, the filtered images already exist.
 
 
