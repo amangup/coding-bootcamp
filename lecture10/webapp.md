@@ -583,7 +583,6 @@ if path not in sys.path:
     sys.path.append(path)
 
 from fortune_teller import app as application
-from fortune_teller import initialize
 ``` 
 
 - Note that I am importing a function called `initialize` from `fortune_teller` and calling it here. This function has not been shown before, and in my code, that function reads the fortune texts into a list.

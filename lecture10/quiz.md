@@ -107,7 +107,7 @@ c: application/json
 d: All of the above
 
 **Question 6**  
-Let's say we have a page with the following template called `message.html`:
+In a functional flask app, let's say we have a page with the following template called `message.html`:
 
 ```html
 <!DOCTYPE html>
@@ -137,7 +137,7 @@ def test():
     return render_template("message.html", data=Data())
 ```
 
-What will happen when go to the path `/test` on your webserver?
+What will happen when go to the path `/message` on your webserver?
 
 Options:  
 a: There will be an error saying that you can't call methods in a template  
@@ -146,7 +146,7 @@ c: We will see a web page with the Buddha's quote.
 d: None of the above   
 
 **Question 7**  
-Let's say we have a page with the following template called `home.html`:
+In a functional flask app, let's say we have a page with the following template called `home.html`:
 
 ```html
 <!DOCTYPE html>
