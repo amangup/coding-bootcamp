@@ -1,6 +1,6 @@
 ## Algorithms
 
-This lecture introduces the concept of an algorithm. Through the example of a sorting algorithm, it explains how to measure how good an algorithm is (based on running time). It also discusses the binary search algorithm.
+[This lecture](https://github.com/amangup/coding-bootcamp/blob/master/lecture6/Algorithms.md) introduces the concept of an algorithm. Through the example of a sorting algorithm, it explains how to measure how good an algorithm is (based on running time). It also discusses the binary search algorithm.
 
 This is a set of slides, and pdf is uploaded here. The google slides link to the presentation is below:
 
