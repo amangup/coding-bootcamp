@@ -128,3 +128,15 @@ We will break the diagrams into two types - **pages** and **user flows**. Here i
 
 - The Three section box represents a page, and we put all the basic details there
 - The dashed arrow represents a dependency
+
+Here is the user flow diagram
+
+ ![Quiz user flow](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture11/quiz_user_flow1.png)
+ 
+ - The black dot represents the start point
+ 
+ Both these diagrams capture some essential information, and are going to be quite beneficial to refer back to from time to time. It's good to create diagrams which have essential information, but not contain everything under the sun - such diagrams would be too hard to use.
+ 
+ I hope that due to these diagrams, you have a very clear idea of what we're going to build, and you would be able to do it yourself if not for the new DB interaction element.
+ 
+ 
