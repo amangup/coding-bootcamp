@@ -5,7 +5,7 @@
 </head>
     <h1>Quiz:</h1>
     <p>
-    <form action="{{ url_for('quiz') }}" method="POST">
+    <form action="{{ url_for('score') }}" method="POST">
         {% for question in questions %}
         <b>Question {{ loop.index }}</b>: {{ question.question_text }}
         <p>
