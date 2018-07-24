@@ -7,4 +7,4 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-from quiz import add_question, quiz
+from quiz import db_tables, add_question, quiz
