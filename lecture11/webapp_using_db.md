@@ -198,7 +198,7 @@ Before we define the tables, let's take care of the `config.py` file. That class
 ```python
 class Config:
     SECRET_KEY = 'really-hard-password'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///home/aman/quiz.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////home/aman/quiz.db'
 ```
 
 - The attribute `SQLALCHEMY_DATABASE_URI` is the path for our DB which in this case is a path of the file (URI stands for [Uniform Resource Identifier](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier). This field is required in the config by `SQLAlchemy` class to know which DB to contact.
@@ -236,6 +236,7 @@ Here's how this module works:
 - The `db.Column` allows you to specify the properties of the column.
   * In this table, we are using two types of columns - `db.Text` and `db.Integer`. These must correspond to the types in the DB, and are not the Python types.
   * The `id` column is the primary key, and that is specified by setting the keyword argument `primary_key` to `True` in the constructor of `db.Column`. This column's value will be automatically set by the DB when you insert new rows.
+- Note that `__repr__()` method accesses the columns of the table from `self`. Even though we have not set those variables' values in `self`, we get access to them because `SQLAlchemy` does that for us.
 
 An interesting thing to note is that there is _circular dependency_ - `__init__.py` imports `db_models` and `db_models` imports `db` which is defined in `__init__.py`. This is a thing we should be careful about as normally these can lead to hard to find bugs. This was true for modules containing view functions in the last lecture as well. As long as we import the modules containing DB models and view functions after the `app` and `db` object are defined, we will be fine.
  
@@ -268,4 +269,58 @@ Our DB and tables are ready! We can use them to add and query data.
 
 ### Using the database in console
 
-Before we write webapp code for working with the DB, let's play with the DB a bit using the Python console itself.
+Before we write webapp code for working with the DB, let's play with the DB a bit using the Python console itself. We will create a new question and store in the DB. After that, we will read all the contents of the `Question` table.
+
+```
+>>> from quiz import db_tables
+>>> question = db_tables.Question(question_text="What gas is not a greenhouse gas?", option_a="Methane", option_b="Nitrous Oxide", option_c="Carbon Dioxide", option_d="Hydrogen", answer=4)
+>>> db.session.add(question)
+>>> db.session.commit()
+>>> all_questions = db_tables.Question.query.all()
+>>> print (all_questions)
+[Q1: What gas is not a greenhouse gas?]
+```
+
+- First, we created an object of the `Question` type. That object represents data that we want to insert into the DB. 
+   * Note that we didn't define a constructor in that class. `SQLAlchemy` did that for us.
+- Then, we use `db.session.add()` method to add the object, which will add the data in `question` object to a new row in the `Question` table in the DB.
+- We call `db.session.commit()`, which is the point at which data is actually put into the DB. 
+- We can run the method `query.all()` to data from all the rows in the table, which is what we do next. Note that the return value is a list of objects of the `Question` class.
+- When we print out the list, the question we added is printed. How the row gets printed is defined in the `__repr__()` method in the `Question` class.
+
+It's important to understand all the steps we just did. Inside our webapp, when we write code to communicate with DB, we will use the same objects and methods.
+
+## Creating the quiz app
+
+Not that we know how we can add questions through the Python console, let's create the actual quiz pages to let the users take the quiz and see their score. This requires us to 
+- read the questions from the DB and render them onto a page
+- have a form which allows users to give an answer to every question
+- Once the answers are submitted, show them the score and tell them the correct answers for each question.
+
+This is a good time to go back and refer to the diagram to see what needs to be done to create these pages. Let's start with the **quiz page**.
+
+### Quiz Page
+
+The quiz page requires multiple elements - the form, the template and the view function. 
+
+If we think about what we need from the form, it's different from what we've tried before. The earlier forms we created had a fixed number of fields. In this case, we need user to choose from four options for each question, and the number of questions are also not fixed (it depends on the data in the DB).
+
+The `WTForms` has anticipated such use cases. There is a _meta field_ called `FieldList` which in turn can generate many copies of the same form as many times as required.
+
+This is how the `forms.py` class looks like:
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import SubmitField, RadioField, FieldList
+
+CHOICES = [('1', 'Option A'),
+           ('2', 'Option B'),
+           ('3', 'Option C'),
+           ('4', 'Option D')]
+
+
+class QuizForm(FlaskForm):
+    answers = FieldList(RadioField('Correct Answer', choices=CHOICES),
+                        min_entries=0)
+    submit = SubmitField('Submit your answers')
+```
