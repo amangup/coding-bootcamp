@@ -3,6 +3,7 @@
 <head>
     <title>Quiz</title>
 </head>
+<body>
     <h1>Quiz:</h1>
     <p>
     <form action="{{ url_for('score') }}" method="POST">
@@ -11,7 +12,6 @@
         <p>
         {{ form.answers.entries[loop.index0]() }}
         {% endfor %}
-        </p>
 
         {{ form.submit() }}
     </form>

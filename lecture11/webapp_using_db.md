@@ -324,3 +324,169 @@ class QuizForm(FlaskForm):
                         min_entries=0)
     submit = SubmitField('Submit your answers')
 ```
+
+- In the class `QuizForm`, the `answers` class attribute is of type `FieldList`. It can be thought as a _list_ of form fields, each of type `RadioField`. 
+  - We can call the `append_entry()` method on an object of type `FieldList` to add more elements to that list (we will do that in the view function).
+- The `RadioField` is the type of field which allows the user to choose only one option out of many. 
+  - The `choices` are provided as a list of tuples, where the first element is the value of the form field if the user selects that, and the second element is the text that user sees against each option.
+ 
+If we look at our pages diagram, we see that we've fulfilled both the dependencies for the quiz page, and we can now write the view function. We add the view function in the file `quiz.py`.
+
+```python
+from flask import render_template
+
+from quiz import app, db, db_tables, forms
+
+
+@app.route('/')
+def quiz():
+    questions = db_tables.Question.query.all()
+    form = forms.QuizForm()
+    for i, question in enumerate(questions):
+        form.answers.append_entry()
+        choices = [('1', question.option_a),
+                   ('2', question.option_b),
+                   ('3', question.option_c),
+                   ('4', question.option_d)]
+        form.answers.entries[i].choices = choices
+
+    return render_template("quiz.html", questions=questions, form=form)
+    
+    
+@app.route('/score', methods=['POST'])
+def score():
+    pass    
+```
+
+- The first order of business is to compare the details like target, method, view function name and the template with the diagram, and make sure that everything matches.
+- In the `quiz()` view function, we query the DB to get all the questions present in the `Question` table. This syntax for the query is identical to what we used while working with the DB in the Python console.
+- The QuizForm needs to be updated based on the data we received from the DB.
+  - The answers attribute is a `FieldList` and we need to make the list as long as the number of questions. For that, we call `form.answers.append_entry()` as many times as there are questions.
+  - We create a new choice selection, where the text for each option is the option text from the Question, instead of just `Option A` which is the default.
+- Eventually, we render the `quiz.html` template (which we haven't covered till now). We send the template the list of the questions, and the form - both of which are required for the template to show a quiz to the users.
+- Note that we've created an empty view function for the score page. This to make sure our template for the quiz page works (as it tries to create the URL for the score page). 
+
+Finally, we get to the template for the quiz page, the `quiz.html`, which is shown below:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+</head>
+<body>
+    <h1>Quiz</h1>
+    <p>
+    <form action="{{ url_for('score') }}" method="POST">
+        {% for question in questions %}
+        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+        <p>
+        {{ form.answers.entries[loop.index0]() }}
+        {% endfor %}
+
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
+```
+
+- The whole page is essentially a form.
+- If we refer to our diagrams, we'll find out that the form action should be the URL for the **Score** page.
+- For displaying all the questions, we use the for loop syntax in the jinja2 templates.
+  - Statements like for loop and if conditions use the `{%` and `%}` style for opening and closing the placeholder.
+  - The for statement itself is identical to how it would be in Python code.
+  - Since there is no indentation, the for statement needs to indicate where it ends using `{% endfor %}`
+  - jinja2 provides us with some variables we can use as indices. We use the variable `loop.index` to show the question number (`loop.index` starts from 1), and `loop.index0` to use as index in the `form.answers.entries` list (`loop.index0` starts from 0).
+- To get the statement of the question, we can use the attribute `question_text` of an object of type `Question`.
+- To show the options, we need to show an appropriate _entry_ from the `answers` FieldList from the form. To do that, all elements of the FieldList are exposed as the attribute `entries` in (`form.answers`).
+
+The quiz page is now complete. Given that we've already added a question in the DB, when you run this app (you'll need a `debug_server.py` to run the app), you should see that question displayed in the quiz. You should try adding another question into the DB using the Python console, and check if it shows up on your quiz page.
+ 
+Obviously, the submit button will only cause an error right now. Let's build the score page next.
+ 
+### Score page
+
+The purpose of the score page is to tell the user how many questions they got right, and to list all the questions, tell them whether their answer fot that question was right.
+
+From the diagram, we know that we don't any form or a new DB table to write the score page, just the view function and its templates.
+
+We've already created an empty view function for the score page in `quiz.py`. Before we fill it out, let's brainstorm a little how it's going to be implemented
+- To calculate the user score, we need to know the correct answers to all the questions, and the user's choices.
+- The correct answers are part of the question data, and we can query the `Question` table again.
+- To get the user's answer, we need to extract that from the form values (which are available in the dictionary `request.form`). Without looking at the code below, can you figure out what field you need to access in request.form to get the user's choices? (Hint: use view source on the quiz page in your browser).
+
+
+
+```python
+ # in the import statement "from flask import ...", import request.
+ 
+ @app.route('/score', methods=['POST'])
+def score():
+    questions = db_tables.Question.query.all()
+    answers = []
+    user_score = 0
+    for i, question in enumerate(questions):
+        user_answer = int(request.form['answers-' + str(i)])
+        user_answer_letter = _get_answer_letter_(user_answer)
+        if user_answer == question.answer:
+            user_score += 1
+            answers.append('{0} is correct'.format(user_answer_letter))
+        else:
+            correct_answer_letter = _get_answer_letter_(question.answer)
+            answers.append('{0} is incorrect. Correct answer is {1}'
+                           .format(user_answer_letter, correct_answer_letter))
+
+    return render_template('quiz_answers.html', questions=questions,
+                           answers=answers, score=user_score)
+
+
+def _get_answer_letter_(user_answer):
+    return chr(ord('A') + user_answer - 1)
+```
+
+- The list of questions is queried from the DB  as before.
+- In the input tag for the radio fields, the `name` value in those fields are of the type `answers-0`, `answers-1` and so on. So, to get the user's choice, we need to get the values corresponding to the keys `answers-0` (and so on) in the `request.form` dictionary.
+- The value in the dictionary can be one of the four strings:`"1"`, `"2"`, `"3"`, `"4"`. To compare that with the answer in the DB (which is stored as an integer), we need to compare the user's choice value to an integer.
+- For each question, we are telling the user either the message "A is correct" indicating their answer was right, or the message "A is incorrect. Correct answer is B".
+- The template needs to know the questions, the score, and the `answers` list.
+
+
+The template `quiz_answers.html` for this is similar to the one with quiz page, though there is no form.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Answers</title>
+</head>
+<body>
+    <h1>Your score is {{ score }}/{{ questions|length }}</h1>
+    <p>
+        {% for question in questions %}
+        <p>
+        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+        <p>
+        Options:<br>
+        <ol type="A">
+            <li>{{ question.option_a }}</li>
+            <li>{{ question.option_b }}</li>
+            <li>{{ question.option_c }}</li>
+            <li>{{ question.option_d }}</li>
+        </ol>
+        <p>
+        Your answer: {{ answers[loop.index0] }}
+        {% endfor %}
+</body>
+</html>
+```
+
+- The top of the page shows the total score. The syntax `{{ questions|length }}` is used to get the length of a collection type (the `len` built-in function doesn't work in jinja2)
+- The rest of the template is just using the `questions` and `answers` lists to show the question and the answers.
+
+Congratulations, you've now built a quiz app! You can add as many questions to the DB, and the quiz app will test the users on all of those questions.
+
+But, adding the questions through the Python console is too much work. We will add the functionality to add questions through the website itself next.
+
+### Add Question Page
+
+
