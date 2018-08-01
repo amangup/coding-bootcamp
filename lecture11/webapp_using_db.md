@@ -335,13 +335,15 @@ If we look at our pages diagram, we see that we've fulfilled both the dependenci
 ```python
 from flask import render_template
 
-from quiz import app, db, db_tables, forms
+from quiz import app, db
+from quiz.db_tables import Question
+from quiz.forms import QuizForm
 
 
 @app.route('/')
 def quiz():
-    questions = db_tables.Question.query.all()
-    form = forms.QuizForm()
+    questions = Question.query.all()
+    form = QuizForm()
     for i, question in enumerate(questions):
         form.answers.append_entry()
         choices = [('1', question.option_a),
@@ -416,13 +418,12 @@ We've already created an empty view function for the score page in `quiz.py`. Be
 - To get the user's answer, we need to extract that from the form values (which are available in the dictionary `request.form`). Without looking at the code below, can you figure out what field you need to access in request.form to get the user's choices? (Hint: use view source on the quiz page in your browser).
 
 
-
 ```python
  # in the import statement "from flask import ...", import request.
  
  @app.route('/score', methods=['POST'])
 def score():
-    questions = db_tables.Question.query.all()
+    questions = Question.query.all()
     answers = []
     user_score = 0
     for i, question in enumerate(questions):
@@ -489,4 +490,151 @@ But, adding the questions through the Python console is too much work. We will a
 
 ### Add Question Page
 
+The add question page is a simple form which adds the data it collects to the DB. If you look at the user flow diagram, you'll see that the form submit action leads back to the add question page, and then it redirects to the "add question success" page. Why do we do that?
+
+The reason is that when someone submits the form with the question details, we still need to add it to the DB before we can call it a success. In the way we will implement this logic, the user will be asked to resubmit the question if the DB commit fails, which is better than showing an error which is better than showing an error.
+
+Later in the lecture, we will also add _form validation_ - to check if all required fields are present, and the contents are valid. In that case as well, we need to allow user the resubmit the question to pass the validation.
+
+Once that is understood, the add question page is not too complicated. The page just renders the form, and on submit, it reads the values in the form and adds a new row in the DB. When the DB commit is successful, it redirects to the Add Question Success page.
+
+The page diagram for Add Question page shows that we need a form called `QuestionForm` to implement this page. We can add the following class in `forms.py`:
+
+```python
+class QuestionForm(FlaskForm):
+    question = TextAreaField('Question')
+    option_a = StringField('Option A')
+    option_b = StringField('Option B')
+    option_c = StringField('Option C')
+    option_d = StringField('Option D')
+    answer = RadioField('Correct Answer',
+                        choices=CHOICES)
+    submit = SubmitField('Add the Question')
+```
+
+- The `QuestionForm` class is straightforward. The only new element is the `TextAreaField`, which allows you to create a bigger field to allow users to enter larger sentences or paragraphs.
+
+Here is the code for `add_question.py`:
+
+```python
+from flask import request, render_template, redirect, url_for, flash
+from sqlalchemy.exc import SQLAlchemyError
+
+from quiz import app, db, forms
+from quiz.db_tables import Question
+from quiz.forms import QuestionForm
+
+
+@app.route('/add_question', methods=['GET', 'POST'])
+def add_question():
+    if request.method == 'POST':
+        question = Question(question_text=request.form['question'],
+                                      option_a=request.form['option_a'],
+                                      option_b=request.form['option_b'],
+                                      option_c=request.form['option_c'],
+                                      option_d=request.form['option_d'],
+                                      answer=int(request.form['answer']))
+        try:
+            db.session.add(question)
+            db.session.commit()
+            return redirect(url_for('add_question_success'))
+        except SQLAlchemyError:
+            flash("We couldn't add your question due to a technical issue on "
+                  "our side. Please try again later.")
+            return _render_form_()
+    else:
+        return _render_form_()
+
+
+def _render_form_():
+    form = QuestionForm()
+    return render_template('add_question.html', form=form)
+
+
+@app.route('/add_question_success')
+def add_question_success():
+    return render_template('add_question_success.html')
+```
+
+- The first view function is `add_question()`. It contains all of the logic described above.
+- The easy case is when `request.method` is not `POST`. In that case, we just create a form object and render the `add_question.html` template.
+- In case the `request.method` is `POST`, we extract the data from the `request.form` dictionary, create the `Question` object for the row we want to add, and then add it to the DB.
+- After the commit, we redirect to the `add_question_success` page.
+- There is some new piece of syntax in this code listing - the `try` and `except` keywords.
+  - Python language implements a mechanism called **Exceptions** which allows code to raise an Exception when something is wrong. The users of that code can receive the exception and ideally they need to handle it, otherwise it can stop their program from functioning(and we don't want our websites to crash).
+  - In our case, the operation `db.session.commit()` interacts with a DB, and there is always a chance of that interaction can fail sometimes. In case of failure, `db.session.commit()` raises an exception of type `SQLAlchemyError`.
+  - Using the `try` and `except` syntax, we can run a piece of code that has a chance of failure, and in case of failure, do something appropriate in that situation.
+  - This concept is called **Error Handling** and exceptions are used by many languages to allow programmers to implement error handling.
+  - You can read more about it here: [https://docs.python.org/3/tutorial/errors.html](https://docs.python.org/3/tutorial/errors.html).
+- For our app's logic to work, we want to show the user a message that something went wrong, and then show the user the form again.
+  - Flask provides a mechanism to show user messages for special situations which are not typically part of the page that user sees. To add messages to be shown to the user, the `flash()` function is used. 
+  - In the template, we can access these messages, and show them only if there is something to show.
+ 
+It's a good idea to spend some time in the section above to properly understand everything. The new concepts introduced here are very important and relevant to real life projects.
+   
+- Finally, in the same file, we have the view function for the `add_question_success` page, which is pretty much a static HTML page.
+
+The last piece(s) of the puzzle are the templates for both the `add_question` and `add_question_success` pages. The latter is very simple, so let's focus on the former:
+
+Here is the `add_question.html` template:
+
+```html
+<!DOCTYPE html>
+<head>
+    <title>Add a question</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul style="color:red">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Enter the question details:</h2>
+    <form action="{{ url_for('add_question') }}" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.question.label }}<br>
+            {{ form.question(rows=10, cols=80) }}
+            <p>
+            {{ form.option_a.label }}: {{ form.option_a(size=80) }}
+            <p>
+            {{ form.option_b.label }}: {{ form.option_b(size=80) }}
+            <p>
+            {{ form.option_c.label }}: {{ form.option_c(size=80) }}
+            <p>
+            {{ form.option_d.label }}: {{ form.option_d(size=80) }}
+            <p>
+            {{ form.answer.label }}<br>
+            {{ form.answer() }}
+
+        <p>{{ form.submit() }}
+    </form>
+</body>
+</html>
+```
+
+- The first part of the template deals with flash messages. There is a function in flask called `get_flashed_messages())` that returns a list of the `messages` that need to be shown to the user. It deletes all the messages from the list which have been read by our app, so that we don't display the same messages again and again.
+  - We use `with`, `if` and `for` statements to read all the flashed messages. Note that we use `style="color:red"` so that these messages appear in red and attract users' attention.
+- The second part is the form to add the question.
+  - As we first saw in the user flow diagram for this page, the form action is the `add_question` page, i.e., it submits the form to itself.
+  - Rest of the form fields are present as expected. 
+  - Note that when calling `form.question()` method in the template, we set two keyword arguments `rows` and `cols`. Remember that this field was of type `TextAreaField` and these values are used to set the size of that text area as it would appear to the user.
+  
+**Exercise:** Create the template for Add Question Success page. Make sure it has a link back to the Add question page in case users want to add more questions.
+
+We've added the add question functionality, and now you can use this new page to add questions instead of using the Python console.
+
+## Form validation
+
+In the apps that've created till now, we have used for forms many times for user input, but we've checked if the user input is valid (e.g., all required fields are present). We've been expecting that the user would enter everything properly.
+
+In this section, we will learn how to do form validation. There are many reasons it is required:
+- Users might forget to fill some required fields.
+- Users might enter a field wrongly (for e.g., email id is not in the proper name@domain.com format).
+- For security purposes, to make sure that we don't accept values that can execute malicious code on our systems.
 

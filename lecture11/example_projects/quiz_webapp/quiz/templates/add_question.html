@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <title>Add a question</title>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul style="color:red">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
     <h2>Enter the question details:</h2>
     <form action="{{ url_for('add_question') }}" method="POST">
         {{ form.hidden_tag() }}
@@ -21,8 +30,8 @@
             <p>
             {{ form.answer.label }}<br>
             {{ form.answer() }}
-        </p>
-        <p>{{ form.submit() }}</p>
+
+        <p>{{ form.submit() }}
     </form>
 </body>
 </html>

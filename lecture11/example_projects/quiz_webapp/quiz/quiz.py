@@ -1,12 +1,14 @@
 from flask import render_template, request
 
-from quiz import app, db, db_tables, forms
+from quiz import app, db
+from quiz.db_tables import Question
+from quiz.forms import QuizForm
 
 
 @app.route('/')
 def quiz():
-    questions = db_tables.Question.query.all()
-    form = forms.QuizForm()
+    questions = Question.query.all()
+    form = QuizForm()
     for i, question in enumerate(questions):
         form.answers.append_entry()
         choices = [('1', question.option_a),
@@ -20,7 +22,7 @@ def quiz():
 
 @app.route('/score', methods=['POST'])
 def score():
-    questions = db_tables.Question.query.all()
+    questions = Question.query.all()
     answers = []
     user_score = 0
     for i, question in enumerate(questions):
