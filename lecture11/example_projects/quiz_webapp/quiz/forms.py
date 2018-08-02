@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, RadioField, FieldList
+from wtforms import StringField, SubmitField, TextAreaField, RadioField, \
+    FieldList
+from wtforms.validators import DataRequired
+
 
 CHOICES = [('1', 'Option A'),
            ('2', 'Option B'),
@@ -19,6 +22,7 @@ class QuestionForm(FlaskForm):
 
 
 class QuizForm(FlaskForm):
-    answers = FieldList(RadioField('Correct Answer', choices=CHOICES),
+    answers = FieldList(RadioField('Correct Answer', choices=CHOICES,
+                                   validators=[DataRequired()]),
                         min_entries=0)
     submit = SubmitField('Submit your answers')

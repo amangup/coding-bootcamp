@@ -5,12 +5,15 @@
 </head>
 <body>
     <h1>Quiz:</h1>
+    {% from "macros.html" import show_flashed_messages %}
+    {{ show_flashed_messages() }}
     <p>
-    <form action="{{ url_for('score') }}" method="POST">
+    <form action="{{ url_for('quiz') }}" method="POST">
+        {{ form.hidden_tag() }}
         {% for question in questions %}
-        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
-        <p>
-        {{ form.answers.entries[loop.index0]() }}
+            <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+            <p>
+            {{ form.answers.entries[loop.index0]() }}
         {% endfor %}
 
         {{ form.submit() }}

@@ -1,14 +1,24 @@
-from flask import render_template, request
+from flask import render_template, request, flash
 
 from quiz import app, db
 from quiz.db_tables import Question
 from quiz.forms import QuizForm
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def quiz():
     questions = Question.query.all()
-    form = QuizForm()
+    form = QuizForm(request.form)
+    if request.method == 'POST':
+        if form.validate() and len(form.answers.entries) == len(questions):
+            return _render_score_page_(questions)
+        else:
+            flash("You must answer all questions.")
+
+    return _render_quiz_page_(form, questions)
+
+
+def _render_quiz_page_(form, questions):
     for i, question in enumerate(questions):
         form.answers.append_entry()
         choices = [('1', question.option_a),
@@ -20,9 +30,7 @@ def quiz():
     return render_template("quiz.html", questions=questions, form=form)
 
 
-@app.route('/score', methods=['POST'])
-def score():
-    questions = Question.query.all()
+def _render_score_page_(questions):
     answers = []
     user_score = 0
     for i, question in enumerate(questions):

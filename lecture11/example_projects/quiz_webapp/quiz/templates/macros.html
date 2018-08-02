@@ -1,0 +1,22 @@
+{% macro show_errors(field) %}
+{% if field.errors %}
+<ul class=errors>
+    {% for error in field.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endmacro %}
+
+{% macro show_flashed_messages() %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul style="color:red">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+{% endmacro %}
+

@@ -380,6 +380,7 @@ Finally, we get to the template for the quiz page, the `quiz.html`, which is sho
     <h1>Quiz</h1>
     <p>
     <form action="{{ url_for('score') }}" method="POST">
+        {{ form.hidden_tag() }}
         {% for question in questions %}
         <b>Question {{ loop.index }}</b>: {{ question.question_text }}
         <p>
@@ -637,4 +638,22 @@ In this section, we will learn how to do form validation. There are many reasons
 - Users might forget to fill some required fields.
 - Users might enter a field wrongly (for e.g., email id is not in the proper name@domain.com format).
 - For security purposes, to make sure that we don't accept values that can execute malicious code on our systems.
+
+### Client side vs. Server side
+
+Form validation can be done on the client side (by running Javascript in the browser) or it can be done on the server side (by looking at the data present as part of the HTTP request in the server). Normally, it would appear that the client side validation is better, as that will tell the user about missing fields or other validation failures immediately, without needing an HTTP request and response. This is true - client side verification is more user friendly.
+
+But it cannot replace server side validation. The HTTP request containing form data to the server can be made without someone browsing the website in a Javascript enabled browser. In essence, client side validation can always be bypassed.
+
+- Thus, all validation must be done at the server side, and especially for websites accessible to the public, no form data should be consumed without such validation. 
+- Some or all of that validation can be _duplicated_ on the client side, whose purpose is to have a more user friendly design, not correctness of functionality.
+
+In this tutorial, we only focus on the server side validation.
+
+### Ensuring required fields are filled
+
+The most common form of validation is to make sure required fields are not left empty.
+
+
+
 
