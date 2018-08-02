@@ -13,7 +13,13 @@
         {% for question in questions %}
             <b>Question {{ loop.index }}</b>: {{ question.question_text }}
             <p>
-            {{ form.answers.entries[loop.index0]() }}
+            <blockquote>
+            {% for subfield in form.answers.entries[loop.index0] %}
+                {{ subfield(required=True) }}
+                {{ subfield.label }}<br>
+            {% endfor %}
+            </blockquote>
+
         {% endfor %}
 
         {{ form.submit() }}

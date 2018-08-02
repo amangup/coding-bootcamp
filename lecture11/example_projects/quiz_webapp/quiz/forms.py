@@ -11,13 +11,13 @@ CHOICES = [('1', 'Option A'),
 
 
 class QuestionForm(FlaskForm):
-    question = TextAreaField('Question')
-    option_a = StringField('Option A')
-    option_b = StringField('Option B')
-    option_c = StringField('Option C')
-    option_d = StringField('Option D')
+    question = TextAreaField('Question', validators=[DataRequired()])
+    option_a = StringField('Option A', validators=[DataRequired()])
+    option_b = StringField('Option B', validators=[DataRequired()])
+    option_c = StringField('Option C', validators=[DataRequired()])
+    option_d = StringField('Option D', validators=[DataRequired()])
     answer = RadioField('Correct Answer',
-                        choices=CHOICES)
+                        choices=CHOICES, validators=[DataRequired()])
     submit = SubmitField('Add the Question')
 
 

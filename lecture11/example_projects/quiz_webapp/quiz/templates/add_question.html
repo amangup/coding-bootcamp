@@ -3,25 +3,35 @@
     <title>Add a question</title>
 </head>
 <body>
-    {% from "macros.html" import show_flashed_messages %}
-    {{ show_flashed_messages() }}
+    {% from "macros.html" import show_flashed_messages, show_errors %}
     <h2>Enter the question details:</h2>
+    {{ show_flashed_messages() }}
+
     <form action="{{ url_for('add_question') }}" method="POST">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.question.label }}<br>
+            {{ form.question.label }}:<br>
             {{ form.question(rows=10, cols=80) }}
             <p>
             {{ form.option_a.label }}: {{ form.option_a(size=80) }}
+
             <p>
             {{ form.option_b.label }}: {{ form.option_b(size=80) }}
+
             <p>
             {{ form.option_c.label }}: {{ form.option_c(size=80) }}
+
             <p>
             {{ form.option_d.label }}: {{ form.option_d(size=80) }}
+
             <p>
-            {{ form.answer.label }}<br>
-            {{ form.answer() }}
+            {{ form.answer.label }}:<br>
+            <blockquote>
+            {% for subfield in form.answer %}
+                {{ subfield(required=True) }}
+                {{ subfield.label }}<br>
+            {% endfor %}
+            </blockquote>
 
         <p>{{ form.submit() }}
     </form>
