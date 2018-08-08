@@ -630,14 +630,14 @@ Here is the `add_question.html` template:
 
 We've added the add question functionality, and now you can use this new page to add questions instead of using the Python console.
 
-## Form validation
+## Form validation and input sanitization
 
 In the apps that've created till now, we have used for forms many times for user input, but we've checked if the user input is valid (e.g., all required fields are present). We've been expecting that the user would enter everything properly.
 
 In this section, we will learn how to do form validation. There are many reasons it is required:
 - Users might forget to fill some required fields.
-- Users might enter a field wrongly (for e.g., email id is not in the proper name@domain.com format).
-- For security purposes, to make sure that we don't accept values that can execute malicious code on our systems.
+- Users might enter a field wrongly (for e.g., email id is not in the proper `name@domain.com` format).
+- For security purposes, to make sure that we don't accept values that can execute malicious code on our systems. In our case, we are going to sanitize the input.
 
 ### Client side vs. Server side
 
@@ -648,11 +648,286 @@ But it cannot replace server side validation. The HTTP request containing form d
 - Thus, all validation must be done at the server side, and especially for websites accessible to the public, no form data should be consumed without such validation. 
 - Some or all of that validation can be _duplicated_ on the client side, whose purpose is to have a more user friendly design, not correctness of functionality.
 
-In this tutorial, we only focus on the server side validation.
+In this tutorial, we will focus on the server side validation, but we will also add very basic client side validation which the browsers implement for us.
 
 ### Ensuring required fields are filled
 
 The most common form of validation is to make sure required fields are not left empty.
+
+Let's try to make sure that all fields are present in the Add Question page. If that's not the case, and the form is submitted, we will flash a message telling the user that they haven't filled all the fields.
+
+We've been using the library `WTForms` for helping us create forms, and it also has an in-built mechanism to validate the data user has filled in the form.  To use that, we will update our definition of the `QuestionForm` class as follows:
+
+```python
+
+
+from wtforms.validators import DataRequired
+
+class QuestionForm(FlaskForm):
+    question = TextAreaField('Question', validators=[DataRequired()])
+    option_a = StringField('Option A', validators=[DataRequired()])
+    option_b = StringField('Option B', validators=[DataRequired()])
+    option_c = StringField('Option C', validators=[DataRequired()])
+    option_d = StringField('Option D', validators=[DataRequired()])
+    answer = RadioField('Correct Answer',
+                        choices=CHOICES, validators=[DataRequired()])
+    submit = SubmitField('Add the Question')
+```
+
+- The change is that for every form field, we have a new keyword argument in the constructor, called `validators`. This means that WTForms will apply those validators on the form data for that field.
+- That argument is a list of _validators_, which are objects of specific classes that implement the functionality of validation.
+- We are using a validator called `DataRequired`, which simply checks if the data we get from user is non-empty.
+- The `wtforms.validators` has other validator classes which, for example, can check if the input is a valid email address. If you have a requirement for validation form input, it's always a good idea to check this module first.
+
+To check if the form input passes validation (that we've defined above), we need to give the data to the `QuestionForm` class and then call a method called `validate()`. Knowing that, I have refactored the `add_question()` view function as follows:
+
+```python
+@app.route('/add_question', methods=['GET', 'POST'])
+def add_question():
+    form = QuestionForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            try:
+                return _add_question_to_db_(request.form)
+            except SQLAlchemyError:
+                flash("We couldn't add your question due to a technical issue"
+                      " on our side. Please try again later.")
+        else:
+            flash("Not all required fields were filled.")
+
+    return _render_form_(form)
+
+
+def _add_question_to_db_(formdata):
+    question = Question(question_text=formdata['question'],
+                        option_a=formdata['option_a'],
+                        option_b=formdata['option_b'],
+                        option_c=formdata['option_c'],
+                        option_d=formdata['option_d'],
+                        answer=int(formdata['answer']))
+
+    db.session.add(question)
+    db.session.commit()
+    return redirect(url_for('add_question_success'))
+```
+
+- In the view function, when I construct the `QuestionForm` object, I pass it the data we've got in the form.
+  - Note that this line is also executed when the user is first seeing the page (and has not submitted the form). In that case, `request.form` will be empty, and passing this data will have no effect.
+- Before we use the data in the form, we call the `form.validate()` method, and _this_ is the point at which validators run and tell us if validation has failed or passed. If it has failed, we flash an appropriate message to the user.
+- To make the code more readable, I have moved out some code to new functions.
+- The template already handles the flashed messages. It would be user-friendly to add a (static) message to the template saying "All fields are required."
+
+Try to submit the form without setting the right answer, and see what happens.
+
+#### What about client side validation?
+
+It will be helpful if the user's can know immediately if they have missed a field in the form. We are going to use a feature in the latest version of html (HTML5), called the [required attribute](https://www.w3schools.com/tags/att_input_required.asp). If add this attribute to an input tag in HTML, the browser will enforce the policy requiring that field to be non-empty for us.
+
+The cool thing is that `WTForms` adds the `required` automatically when you add a `DataRequired()` validator to the field. However, that works only for some fields right now, and it doesn't work for radio fields automatically. To fix that, we can change the template a bit, and add the `required` attribute ourselves.
+
+Earlier, to create the radio field for `answer`, we used the following method:
+
+```html
+ {{ form.answer() }}
+```
+
+but, we can do it as follows, instead:
+
+```
+{% for subfield in form.answer %}
+    {{ subfield(required=True) }}
+    {{ subfield.label }}<br>
+{% endfor %}
+```
+
+- `form.answer` is a RadioField, hence it has many subfields representing each option.
+- We can loop over those subfields, and call the method `subfield()` to output the HTML for that subfield only. When calling that method, we can set `required=True`, and that will set that attribute.
+  - This can be used generally. If you pass an keyword attribute like `x="y"` in the tag, that will get added to the final HTML. And, if you add `x=True`, `x` will get added as an attribute without any value assigned to it, in the HTML tag.
+  
+Now, if you test the Add question page, you will see the browser notifying you if there is any field which is left empty.
+
+#### Dynamic forms
+
+Let's turn our attention to the Quiz page now. 
+- The first change is that when the form submits, it should post to the quiz page, and not the scores page, so that we have the ability to render the same form if the validation fails. 
+- Additionally, we would need to send the form data along when we redirect to scores page because scores page needs it to calculate the score. That is not a good solution, instead we are simply going to eliminate the scores page, and have the quiz page show the scores at the same URL.
+
+Given these two points, let's update our page and user flow diagrams:
+
+ ![Update Quiz Page UML](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture11/quiz_page_uml2.png)
+
+ ![Quiz User flow](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture11/quiz_user_flow2.png)
+
+Let's talk about validation. The form design is a bit more complicated there, because the number of fields is dynamically decided. Specifically,
+
+- When we create `form = QuizForm(request.form)`, the `form` created doesn't know how many answer fields should be present (remember we call `append_entry()` _after_ we create the `form` object.
+- Thus, field level validation built into the WTForms doesn't work for us.
+
+Instead, we can do validation ourselves.
+
+After all these changes, the file `quiz.py` looks like this. Go throug this carefully, as there are many changes.
+
+```python
+from flask import render_template, request, flash
+
+from quiz import app, db
+from quiz.db_tables import Question
+from quiz.forms import QuizForm
+
+
+@app.route('/', methods=['GET', 'POST'])
+def quiz():
+    questions = Question.query.all()
+    form = QuizForm(request.form)
+    if request.method == 'POST':
+        # we are checking if the number of answers in the form data is the same
+        # as the number of questions in the quiz.
+        if len(form.answers.entries) == len(questions):
+            return _render_score_page_(questions)
+        else:
+            flash("You must answer all the questions.")
+
+    return _render_quiz_page_(form, questions)
+
+
+def _render_quiz_page_(form, questions):
+    for i, question in enumerate(questions):
+        form.answers.append_entry()
+        choices = [('1', question.option_a),
+                   ('2', question.option_b),
+                   ('3', question.option_c),
+                   ('4', question.option_d)]
+        form.answers.entries[i].choices = choices
+
+    return render_template("quiz.html", questions=questions, form=form)
+
+
+def _render_score_page_(questions):
+    answers = []
+    user_score = 0
+    for i, question in enumerate(questions):
+        user_answer = int(request.form['answers-' + str(i)])
+        user_answer_letter = _get_answer_letter_(user_answer)
+        if user_answer == question.answer:
+            user_score += 1
+            answers.append('{0} is correct'.format(user_answer_letter))
+        else:
+            correct_answer_letter = _get_answer_letter_(question.answer)
+            answers.append('{0} is incorrect. Correct answer is {1}'
+                           .format(user_answer_letter, correct_answer_letter))
+
+    return render_template('quiz_answers.html', questions=questions,
+                           answers=answers, score=user_score)
+
+
+def _get_answer_letter_(user_answer):
+    return chr(ord('A') + user_answer - 1)
+```
+ 
+- We changed the `score()` view function into a non-view function which does essentially the same thing. The main difference is that there is no `app.route()` decoration on it.
+- The `quiz()` view function now accepts both `GET` and `POST` request.
+- The `quiz()` view functions also calls the `_render_score_page_()` when the user has submitted the form properly.
+- We do our own validation using the check `len(form.answers.entries) == len(questions)`, to make sure we've got as many answers as there are questions.
+
+On top of this, we can change the template for rendering radio elements as we did in the add questions page, so that we add the `required` attribute to the HTML for those tags, and the browser will do the client side validation for us.
+
+#### Aside: Macros in jinja2
+
+Maybe you've already realized that even though we've added `flash()` messages to the quiz pages's implementation, we haven't changed the template for the quiz page to actually display those messages.
+
+We can copy paste the code from `add_question.html` template to `quiz.html` template. But there is a better way - we are going to define that code as a **macro** in jinja2, and then reuse that macro.
+
+To do that, let's create a new file in the templated directory called `macros.html`. This is not a template for any page to use, but instead, just contains the macros for other templates to use.
+
+```html
+{% macro show_flashed_messages() %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<span style="color:red">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</span>
+{% endif %}
+{% endwith %}
+{% endmacro %}
+```
+
+- the syntax for macro definition is similar to the function definition in Python, except that we use the keyword `macro` instead of `def`.
+- we need to enclose macro definition in in a set of starting and ending jinja2 control blocks - `{% macro macro_name() %}` and `{% endmacro %}`.
+- Macros can take arguments as well.
+
+The `quiz.html` template (and the `add_question.html` template) can be updated to include this macro as follows:
+
+```html
+{% from "macros.html" import show_flashed_messages %}
+{{ show_flashed_messages() }}
+```
+
+- This syntax is also similar to the import syntax for Python.
+
+### Sanitizing input
+
+Until now, we have been assuming that the text we take as input in the add question page has no html tags. Why do we need think about this?
+- If we allow tags in the question and choices' texts, then we can allow the question to formatted as the user wants it - make some parts bold or italic, allow text to be colored.
+- An HTML tag eventually leads to be some code to be executed in the browser, and a malicious actor can add tags to the question text, which when executed can cause harm. For example, someone can add a `<script>` tag and point to a javascript that can potentially crash the browser or read some data from the computer of the user (the latest way to add malicious code seems to be to run cryptocurrency mining code on unsuspecting users' code). We need to make sure that such malicious code is not allowed to run. 
+
+What would happen, as the webapp is currently implemented, if some added tags in the question and choices' text fields.
+- The data stored in the DB will contain the text as entered by the user (this is not good).
+- When we display the question using the jinja template, it will automatically [_escape_](http://doc.locomotivecms.com/making-blog/2-6-html-escaping) all the text. That will make sure the HTML tags don't execute any code.
+
+Thus, even though we are storing data in the DB with potentially malicious code, jinja templates are saving us from executing any of it. Ideally,
+- we should clean up malicious code even before it enters the DB (just in case someone else is using the same DB and jinja is not there to save them).
+- and allow some HTML tags which can be used for formatting.
+
+#### Mozilla bleach library
+
+Mozilla has written a Python library called `bleach` which can be used to implement our needs. It can take a list of _allowed tags_, and given any string, it can ignore the allowed tags and escape all others.
+
+Let's how to use it. In the `add_question.py`, I've added the following function:
+
+```python
+import bleach
+
+ALLOWED_TAGS = ['p', 'br', 'i', 'b', 'sub', 'sup', 'code', 'samp', 'var']
+
+def _clean_html_(text):
+    return bleach.clean(text, tags=ALLOWED_TAGS, attributes=['style'],
+                 styles=['color'])
+```
+
+- The function `bleach.clean()` does the sanitization.
+- This takes the list of allowed tags, allowed attributes for the tags, and for the `style` attribute (used to add CSS formatting), even the kind of CSS formatting you can add (in this case, you only change color).
+
+We can use the `_clean_html_()` function before we add the data to the DB. In the same file, we can change how we create the Question object.
+
+```python
+question = Question(question_text=_clean_html_(formdata['question']),
+                    option_a=_clean_html_(formdata['option_a']),
+                    option_b=_clean_html_(formdata['option_b']),
+                    option_c=_clean_html_(formdata['option_c']),
+                    option_d=_clean_html_(formdata['option_d']),
+                    answer=int(formdata['answer']))
+```
+
+Finally, since we are sanitizing the input ourselves, we have to tell jinja to not automatically escape the text when displaying. To do that, we can add `|safe` in the `quiz.html` and `quiz_answers.html` template as follows:
+
+```html
+<b>Question {{ loop.index }}</b>: {{ question.question_text|safe }}
+```
+
+and 
+
+```html
+{{ subfield.label|safe }}<br>
+```
+
+and any place else where we are rendering question or choices' text.
+
+Here is an example of what you can do. In the question shown in the screenshot below, I added bold tag and color CSS formatting - which works as expected. I also tried to add a link, which doesn't show up as a link because mozilla bleach has escaped that HTML, as the `<a>` tag is not allowed.
+
+![Question using HTML](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture11/question_html.png)
+
 
 
 

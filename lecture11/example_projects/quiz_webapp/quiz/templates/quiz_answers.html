@@ -8,14 +8,14 @@
     <p>
         {% for question in questions %}
         <p>
-        <b>Question {{ loop.index }}</b>: {{ question.question_text }}
+        <b>Question {{ loop.index }}</b>: {{ question.question_text|safe }}
         <p>
         Options:<br>
         <ol type="A">
-            <li>{{ question.option_a }}</li>
-            <li>{{ question.option_b }}</li>
-            <li>{{ question.option_c }}</li>
-            <li>{{ question.option_d }}</li>
+            <li>{{ question.option_a|safe }}</li>
+            <li>{{ question.option_b|safe }}</li>
+            <li>{{ question.option_c|safe }}</li>
+            <li>{{ question.option_d|safe }}</li>
         </ol>
         <p>
         Your answer: {{ answers[loop.index0] }}

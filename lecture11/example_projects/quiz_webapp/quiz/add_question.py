@@ -21,7 +21,7 @@ def add_question():
                 flash("We couldn't add your question due to a technical issue"
                       " on our side. Please try again later.")
         else:
-            flash("All fields are required.")
+            flash("Not all required fields were filled.")
 
     return _render_form_(form)
 
@@ -40,12 +40,13 @@ def _add_question_to_db_(formdata):
 
 
 def _clean_html_(text):
-    bleach.clean(text, tags=ALLOWED_TAGS, attributes=['style'],
+    return bleach.clean(text, tags=ALLOWED_TAGS, attributes=['style'],
                  styles=['color'])
 
 
 def _render_form_(form):
-    return render_template('add_question.html', form=form)
+    return render_template('add_question.html', form=form,
+                           allowed_tags=ALLOWED_TAGS)
 
 
 @app.route('/add_question_success')

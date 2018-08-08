@@ -22,7 +22,6 @@ class QuestionForm(FlaskForm):
 
 
 class QuizForm(FlaskForm):
-    answers = FieldList(RadioField('Correct Answer', choices=CHOICES,
-                                   validators=[DataRequired()]),
+    answers = FieldList(RadioField('Correct Answer', choices=CHOICES),
                         min_entries=0)
     submit = SubmitField('Submit your answers')

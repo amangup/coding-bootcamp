@@ -3,12 +3,20 @@
     <title>Add a question</title>
 </head>
 <body>
-    {% from "macros.html" import show_flashed_messages, show_errors %}
+    {% from "macros.html" import show_flashed_messages %}
     <h2>Enter the question details:</h2>
     {{ show_flashed_messages() }}
 
     <form action="{{ url_for('add_question') }}" method="POST">
         {{ form.hidden_tag() }}
+        All fields in the form are required.<br>
+        You are allowed to use the following tags to format your question or answers:
+        <ul>
+            {% for tag in allowed_tags %}
+            <li>&lt;{{ tag }}&gt;</li>
+            {% endfor %}
+        </ul>
+        You can also use the style attribute in a tag to set color.
         <p>
             {{ form.question.label }}:<br>
             {{ form.question(rows=10, cols=80) }}

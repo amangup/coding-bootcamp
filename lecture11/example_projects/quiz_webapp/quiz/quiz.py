@@ -10,10 +10,12 @@ def quiz():
     questions = Question.query.all()
     form = QuizForm(request.form)
     if request.method == 'POST':
-        if form.validate() and len(form.answers.entries) == len(questions):
+        # we are checking if the number of answers in the form data is the same
+        # as the number of questions in the quiz.
+        if len(form.answers.entries) == len(questions):
             return _render_score_page_(questions)
         else:
-            flash("You must answer all questions.")
+            flash("You must answer all the questions.")
 
     return _render_quiz_page_(form, questions)
 
