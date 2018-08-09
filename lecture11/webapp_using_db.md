@@ -1,4 +1,4 @@
-# Web Applications using Databases
+# Using Databases for Web applications
 
 In the last lecture, we built websites that have no _state_. Irrespective of user and time, they provide the same functionality.
 

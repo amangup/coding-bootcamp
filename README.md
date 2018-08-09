@@ -47,10 +47,14 @@ We cover the topic of Object Oriented Programming (OOP), and learn how to do wri
 We take a break from programming and learn how the Internet and the World Wide Web works. It sets us up for the next lectures, which are all about creating web sites using Python.
 
 ### Lecture 10 - Web App development using Flask
-In this lecture we will learn how to create websites using a popular Python web development framework called Flask. The lecture is a tutorial in which we create a Fortune teller app that shows the user a random _fortune_. 
+In this lecture we will learn how to create websites using a popular Python web development framework called Flask. The lecture is a tutorial in which we create a Fortune teller app that shows the user a random _fortune_.
 
 The assignments make you develop a few more interesting websites, and you'll also learn some very important concepts while doing them (like REST APIs, JSON, etc.)
 
+### Lecture 11 - Using databases for Web Applications
+We get introduced to the concept of databases and learn how we can use them to make websites which has more features and a persistent state. We make a quiz app which allows users to take a quiz and see their performance on it.
+
+The assignments make you extend that quiz app further, and make it full featured enough to be an useful product for people to use.
 
 # Installing Python on your computer
 
