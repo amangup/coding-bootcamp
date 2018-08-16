@@ -140,4 +140,20 @@ Every website that uses HTTPS needs to create a certificate, the primary purpose
 When launching our website for public use, we need to obtain this certificate. Otherwise the browser will mark our website as untrustworthy.
 
  
+## A writing web app
+
+In this tutorial, we are going to write an app which allows authors to add articles to the platform, and let other users to view those articles. We will also allow readers to follow some specific authors and read articles from only those.
+
+As we did for the quiz app, we start with the diagrams. Here are the page and the user flow diagrams for this webapp.
+
+![Page diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/pages_uml1.svg)
+
+![User flow diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/user_flow_uml1.svg)
+
+
+- We have added another field called **Login Required**, because there are some pages which are meant only for logged-in users.
+  * The value of "No only" means that logged-in users should never see that page.
+- In the user flow diagrams, we have differentiated the flow for logged-in and anonymous users
+
+**Exercise:** Some of the web app is similar to the quiz app we created in the last lecture. You need to create the **Home page** and the **Create Article Page**, and create a DB table where you store those articles.
 
