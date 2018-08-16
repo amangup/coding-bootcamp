@@ -146,9 +146,9 @@ In this tutorial, we are going to write an app which allows authors to add artic
 
 As we did for the quiz app, we start with the diagrams. Here are the page and the user flow diagrams for this webapp.
 
-![Page diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/pages_uml1.svg)
+![Page diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/pages_uml1.png)
 
-![User flow diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/user_flow_uml1.svg)
+![User flow diagrams](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/user_flow_uml1.png)
 
 
 - We have added another field called **Login Required**, because there are some pages which are meant only for logged-in users.
