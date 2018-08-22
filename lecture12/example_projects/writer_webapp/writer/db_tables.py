@@ -3,7 +3,7 @@ from writer import db, bcrypt
 
 
 class User(UserMixin, db.Model):
-    uid = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     email = db.Column(db.String(320), unique=True, nullable=False)
     password_hash = db.Column(db.String(56), nullable=False)
     name = db.Column(db.String(100), nullable=False)
@@ -22,12 +22,11 @@ class User(UserMixin, db.Model):
 
 
 class Article(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True)
     article_title = db.Column(db.Text)
     article_text = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey('User.uid'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     publish_date = db.Column(db.TIMESTAMP(timezone=True))
 
     def __repr__(self):
-        return "A{0}: {1}".format(self.id, self.article_title)
-
+        return "{0}: {1}".format(self.id, self.article_title)

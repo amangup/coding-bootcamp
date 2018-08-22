@@ -1,4 +1,4 @@
-from webapp import app
+from writer import app
 
 
 def main():

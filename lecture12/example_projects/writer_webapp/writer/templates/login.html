@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Writer</title>
+</head>
+<body>
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
+    {{ show_flashed_messages() }}
+    <form action="{{ login_action }}" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.email.label }}:<br>
+            {{ form.email(size=75) }}<br>
+            {{ show_field_errors(form.email) }}
+        <p>
+            {{ form.password.label }}:<br>
+            {{ form.password(size=75) }}<br>
+            {{ show_field_errors(form.password) }}
+
+        <p>{{ form.login() }}
+    </form>
+
+    <a href="{{ url_for('register') }}">Not registered?</a>
+</body>
+</html>

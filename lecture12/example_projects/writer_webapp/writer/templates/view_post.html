@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>View Article | Writer</title>
+</head>
+<body>
+    <h2>{{ article.article_title }}</h2>
+    Author: <i>{{ article.author.name }}</i><br>
+    Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
+
+    <p>
+    {{ article.article_text }}
+
+</body>
+</html>

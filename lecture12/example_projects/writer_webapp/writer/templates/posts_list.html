@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Articles | Writer</title>
+</head>
+<body>
+    {% for article in articles %}
+        <p>
+            <b>
+                <a href="{{ url_for('view_post', id=article.id) }}" >
+                    {{ article.article_title }}</a>
+            </b><br>
+            Written By: {{ article.author.name }}
+        </p>
+
+    {% endfor %}
+
+</body>
+</html>
