@@ -44,7 +44,7 @@ set-cookie: nyt-a=bLuj-LiP-morejumble; Expires=Mon, 12 Aug 2019 19:41:19 GMT; Pa
 
 - The HTTP request has no mention of the cookie, the time I log in.
 - The HTTP response has a header called `set-cookie`. The details of the cookie are set in the value of that header.
-- The main part is the key-value pair which in this case is: `nyt-a=bLuj-JiQ-yumOlEbXze0wP`. This is used by new york times as an "Unique identifier to identify behavior on site." (The list of all cookies used by nytimes.com and their details are [listed here](https://www.nytimes.com/subscription/dg-cookie-policy/output.html)).
+- The main part is the key-value pair which in this case is: `nyt-a=bLuj-LiP-morejumble`. This is used by new york times as an "Unique identifier to identify behavior on site." (The list of all cookies used by nytimes.com and their details are [listed here](https://www.nytimes.com/subscription/dg-cookie-policy/output.html)).
 - The cookie has three more attributes:
   - There is an expiry date, and this instructs my browser to not delete this cookie until that date.
   - There is a `Domain` attribute, which tells the browser to send the cookie in the HTTP request sent to this domain.
