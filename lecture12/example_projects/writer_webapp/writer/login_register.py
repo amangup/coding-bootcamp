@@ -36,8 +36,9 @@ def login():
         else:
             print("Invalid or incomplete input.")
 
-    login_action = (url_for('login') if next_page is None
-                    else url_for('login', next=next_page))
+    safe_next_page = _get_safe_url(next_page)
+    login_action = (url_for('login') if safe_next_page is None
+                    else url_for('login', next=safe_next_page))
     return render_template("login.html", form=form, login_action=login_action)
 
 
@@ -81,10 +82,16 @@ def _add_user_to_db(form):
 
 
 def _continue_browsing(next_page=None):
+    safe_next_page = _get_safe_url(next_page)
+    if safe_next_page:
+        return redirect(next_page)
+    else:
+        return redirect(url_for('all_posts'))
+
+
+def _get_safe_url(next_page):
     # URL form: scheme://netloc/path;parameters?query#fragment
     # If netloc is empty, it means the URL is relative, which we want to ensure
     # so that we don't send our user to other domains.
     if next_page and not url_parse(next_page).netloc:
-        return redirect(next_page)
-    else:
-        return redirect(url_for('all_posts'))
+        return next_page
