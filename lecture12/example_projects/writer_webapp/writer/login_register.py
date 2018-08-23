@@ -1,6 +1,6 @@
 from secrets import token_hex
 
-from flask import request, render_template, redirect, url_for, flash, get_flashed_messages
+from flask import request, render_template, redirect, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.urls import url_parse
@@ -45,7 +45,8 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return _continue_browsing()
+    next_page = request.args.get('next')
+    return _continue_browsing(next_page)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -58,7 +59,7 @@ def register():
     if request.method == 'POST':
         if form.validate():
             try:
-                _add_user_to_db(form)
+                return _add_user_to_db(form)
             except SQLAlchemyError:
                 flash("We couldn't register you due to a technical issue"
                       " on our side. Please try again later.")
@@ -75,6 +76,7 @@ def _add_user_to_db(form):
                 name=form.name.data)
     db.session.add(user)
     db.session.commit()
+    login_user(user)
     return _continue_browsing()
 
 

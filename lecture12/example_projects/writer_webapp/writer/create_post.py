@@ -15,15 +15,11 @@ from writer.forms import CreatePostForm
 def create_post():
     form = CreatePostForm(request.form)
     if request.method == 'POST':
-        print(request.form)
-        if form.validate():
-            try:
-                return _add_post_to_db(form)
-            except SQLAlchemyError:
-                flash("We couldn't add your article due to a technical issue"
-                      " on our side. Please try again later.")
-        else:
-            flash("Not all required fields were filled.")
+        try:
+            return _add_post_to_db(form)
+        except SQLAlchemyError:
+            flash("We couldn't add your article due to a technical issue"
+                  " on our side. Please try again later.")
 
     return _render_form(form)
 
@@ -32,6 +28,11 @@ def _add_post_to_db(form):
     article_id = token_urlsafe(16)
     is_draft = True if form.save.data else False
     publish_date = None if is_draft else datetime.now(timezone.utc)
+
+    if not is_draft and not form.validate():
+        flash("Not all required fields were filled.")
+        return _render_form(form)
+
     article = Article(id=article_id,
                       article_title=form.title.data,
                       article_text=form.text.data,
@@ -44,7 +45,7 @@ def _add_post_to_db(form):
         flash("The article was saved.")
         return _render_form(form)
     else:
-        return redirect(url_for('view_post', id='article_id'))
+        return redirect(url_for('view_post', id=article_id))
 
 
 def _render_form(form):

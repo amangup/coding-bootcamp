@@ -157,3 +157,441 @@ As we did for the quiz app, we start with the diagrams. Here are the page and th
 
 **Exercise:** Some of the web app is similar to the quiz app we created in the last lecture. You need to create the **Home page** and the **Create Article Page**, and create a DB table where you store those articles.
 
+### The data model
+
+As you can see in the diagrams above, there are two tables: `User` and `Posts` which are being referred to again and again for multiple pages. Let's look into what data they would contain.
+
+Here is the **User** table:
+
+| id | email | password_hash | name | following |
+| --- | --- | --- | --- | --- |
+| ac3 | hh@rockwell.town | 938prfsjkldh398 | Hogarth Hughes | ["b@c3"] |
+
+- The `id` is not an incrementing integer. That is to make sure that if an user id leaks at some point, one cannot find the ids for other users or approximate how many users does the platform have (if they were incremental integers, both those things can be known).
+- The password is not stored as it is in the DB. We _hash_ it before storing, i.e., convert into some form of jumbled string which cannot be used to derive the password back.
+- The following column is stored as a JSON list of user ids whom an user is following. Storing JSON in DB columns is a common way to store structured data in them.
+
+Now, the **Article** table:
+
+| id | article_title| article_text | author_id | publish_date |
+| --- | --- | --- | --- | --- |
+| 2y32 | Flying robots | are coming| ac3 | 22 Aug 1953 |
+
+- For the same reason as in **User** table, id is jumbled string. This id is visible to the user, as the View Post page have urls like `/post?id=2y32`.
+- The `author_id` should map to one of rows in the **User** table. This is a _foreign key_ to the **User** table.
+
+
+Here is the `db_tables.py` file for all of this:
+
+```python
+from flask_login import UserMixin
+from writer import db, bcrypt
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.String(32), primary_key=True)
+    email = db.Column(db.String(320), unique=True, nullable=False)
+    password_hash = db.Column(db.String(56), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+
+    # We store the list of authors being followed as a JSON list of user ids
+    following = db.Column(db.Text)
+
+    articles_written = db.relationship("Article", lazy=True, backref="author")
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    @classmethod
+    def hash_password(cls, password):
+        return bcrypt.generate_password_hash(password).decode('utf-8')
+        
+    def __repr__(self):
+        return"{0}: {1}".format(self.email, self.name)       
+
+
+class Article(db.Model):
+    id = db.Column(db.String(16), primary_key=True)
+    article_title = db.Column(db.Text)
+    article_text = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    publish_date = db.Column(db.TIMESTAMP(timezone=True))
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.id, self.article_title)
+```
+
+- The User table has a few new items:
+  - First, let's look at the `check_password()` and `hash_password()` methods. We are using a library called `flask_bcrypt` to implement the functionality to hash the passwords. The `bcrypt` object is created in `__init__.py` as 
+
+    ```python  
+    from flask_bcrypt import Bcrypt
+    
+    app = Flask(__name__)
+    bcrypt = Bcrypt(app)
+    ```
+  - The next item to look at the is the `db.relationship` function call. This creates a relationship between the current table (User), and the "Article" table.
+  - This relationship gives both the table additional fields. In the User table, the field `articles_written` will create a list of Article objects written by this user.
+  - The `backref="author"` keyword argument creates a field in the objects of the Article class - this field will contain the `User` object for the author who wrote this article.
+  - For this to work, we must have a foreign key relationship, which we are defining in the `author_id` field of the `Article` class.
+  - The kwarg `lazy=True` means that the _foreign_ object will be lazily loaded when it's used in the code. This is a good default to have.
+  - The fact that it's inheriting from this class called `UserMixin` will be discussed in the next section.
+  
+- The Article table looks quite simple in comparison
+  - The title and text columns are nullable. This is because we will provide the functionality to save an article and edit again later before publishing, and in that case some portions might be left incomplete.
+  - As mentioned before, `author_id` field defines a foreign key to the User table.
+  - `publish_date` is of type `TIMESTAMP`, which is how we store the time at which the article was published. We also use this field to know if an article is in _draft_ state, i.e., if publish_date is None, we can assume that this article is not published yet. This logic will be handled in the `create_post()` view function.
+  
+### Implementing user registration and login
+
+The biggest change in this app compared to previous ones we've done is the fact we have user accounts.
+
+To make it much easier to work with those, we will use a library called `Flask-Login`. 
+
+#### Working model for Flask-Login
+
+The primary function that this library performs is this:
+ 
+1. Sets a cookie for the current user when you tell it that the user has logged in (using a function called `login_user()`). It extracts the value of the `id` column in the `User` table (by default, when using `UserMixin`. See below.), and creates a cookie using that.
+2. While the user is logged in and sends another HTTP request, that cookie is sent to the HTTP server as part of the request. `Flask-Login` reads that cookie, extracts the user id, and asks us to fetch the corresponding User object (using a `user_loader` function).
+3. While logged in, this user is made available to all view functions and in the jinja2 templates as the variable `current_user`.
+
+This saves us from the effort of creating a cookie ourselves, and then getting the information about the user in every view function handling a request. By default, this cookie has none of the properties that we discussed before - only the key value pair.
+
+Whatever class we use to define the User, Flask-Login requires that it implement some attributes to let Flask know the current status. These are:
+
+- `is_authenticated` - set this to `True` if the user's password check has succeeded.
+- `is_active` - if an user is inactive (say the platform has blocked them or some verification is pending), then you could set this to `False`.
+- `is_anonymous` - set to `True` if this is an anonymous user.
+- `get_id()` - this is a method, which you have to implement the user id.
+
+`Flask-Login` also provides a couple of classes which implement these attributes:
+- `UserMixin` - this is a class which always sets `is_authenticated` and `is_active` to `True`, and implements `get_id()` method by returning `self.id`.
+  - You would login an user only if the authentication succeeds, thus it's reasonable to always set  `is_authenticated` and `is_active` to `True` for an user object representing a logged in user.
+  - For the `User` model class, we can inherit from this class to not have to write these attributes ourselves. Our user id _must_ be set in the field called `id`.
+
+- `AnonymousUserMixin` - this is used when no user is logged in, and it sets `is_authenticated` and `is_active` to `False`, and sets `is_anonymous` to True.
+  - When a view function or template accesses the `current_user` object when no user is logged in, an object of type `AnonymousUserMixin` is returned. This, combined with the fact that `User` object inherits from `UserMixin` means that we can use properties like `is_authenticated` and `is_anonymous` to make our code do different things (like showing a link for "Login" if `is_anonymous` is `True`, or a link for `Logout` otherwise).
+
+#### Login and Register Forms
+
+The login and register forms need more validation than just `DataRequired()` that we have used before. Let's how that looks like:
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email, Length, EqualTo
+
+SMALL_PASSWORD_MESSAGE = "A password must have at least 8 characters"
+
+
+class LoginForm(FlaskForm):
+    email = StringField("E-mail", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    login = SubmitField("Login")
+
+
+class RegisterForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("E-mail", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired(),
+                                                     Length(min=8,
+                                                            message=SMALL_PASSWORD_MESSAGE)])
+    repeat_password = PasswordField('Repeat Password',
+                                    validators=[DataRequired(), EqualTo('password')])
+
+    register = SubmitField("Register")
+```
+
+- In the `LoginForm`, 
+   - the `email` field has additional validator for validating if the email entered by the user is a valid email id.
+   - the `password` field is of type `PasswordField`. In a browser, it is rendered so that when the user types a password, the characters are hidden.
+
+- In the `RegisterForm`
+  - The `password` field has a check for minimum length. This is to ensure that the password is reasonably secure.
+  - We ask for the password twice, which is done to reduce the chance that someone mistype their password. We can use a validator called `EqualTo()` which validates if the value of this field is the same as that other field.
+    
+#### Detailed form validation error messages
+
+As we saw above in the form definitions, there is much more validation happening at the time of login and registration. It would frustrating to the user if one submits a form which fails validation, but is not told exactly why.
+
+Fortunately, this is easy to implement. For each validation failure, `wtforms` generates an error message we can show to the user automatically. All we need to do is show that to the user - and that means a change is required in the templates.
+
+At first, we create a macro which we can use for every field we need to show errors for:
+
+```html
+{% macro show_field_errors(field) %}
+<span style="color:red">
+    {% for error in field.errors %}
+    {{ error }}
+    {% endfor %}
+</span>
+{% endmacro %}
+```
+- Every `wtforms` field has an attribute called `errors` which contains these error messages.
+
+As an example, this is how the login template looks like that uses this macro:
+
+```html
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Writer</title>
+</head>
+<body>
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
+    {{ show_flashed_messages() }}
+    <form action="{{ url_for('login') }}" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.email.label }}:<br>
+            {{ form.email(size=75) }}<br>
+            {{ show_field_errors(form.email) }}
+        <p>
+            {{ form.password.label }}:<br>
+            {{ form.password(size=75) }}<br>
+            {{ show_field_errors(form.password) }}
+
+        <p>{{ form.login() }}
+    </form>
+
+    <a href="{{ url_for('register') }}">Not registered?</a>
+</body>
+</html>
+```
+- For the `email` and `password` fields, we call the `show_field_errors` macro. It lets the user know if they entered an invalid email address in this case (we have no validation for the `password` field in the `LoginForm`).
+
+The usage in the template for registration is identical.
+  
+#### Login and Register view functions
+
+Now that we know how `Flask-Login` works, and have the relevant forms ready, we can start writing the view functions.
+
+To work with `Flask-Login`, we need to create an object of a class called `LoginManager`, which is used frequently. We would do this in `__init__.py`:
+
+```python
+from flask_login import LoginManager
+
+#... create app object
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+```
+- The `login_view` attribute tells `Flask-Login` what view to execute if it needs to redirect an anonymous user to login before accessing a "login required" page.
+
+Next, we need to take care of the `user_loader` function. This function must return the `User` object given the user's id, as shown below:
+
+```python
+from writer import app, db, login_manager
+from writer.db_tables import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+```
+
+- As mentioned before, it is called when `Flask-Login` receives a cookie for an user session and it needs to get the corresponding `User` object.
+
+
+The login page is implemented as below:
+
+```python
+from flask import request, render_template, redirect, url_for, flash
+from flask_login import login_user, current_user, logout_user, login_required
+
+from writer.forms import LoginForm, RegisterForm
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return _continue_browsing()
+
+    form = LoginForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user is not None and user.check_password(form.password.data):
+                login_user(user)
+                return _continue_browsing()
+            else:
+                flash("No user with email-id found, or the password is "
+                      "incorrect.")
+        else:
+            print("Invalid or incomplete input.")
+
+    return render_template("login.html", form=form)
+    
+def _continue_browsing():
+    return redirect(url_for('all_posts'))    
+```
+- Irrespective of the method of the request, if the user is already authenticated, then coming to this page is a mistake. We redirect them away automatically in that case.
+- If the request method is not `POST`, we just respond with the login page that renders the `LoginForm`.
+- If the method is `POST`, then we use the email from the form to find the corresponding user from the DB. If we find an user, and have ensured that the password matches, we can _log the user in_, i.e., ask `Flask-Login` to set the cookies.
+- For that, we call a function called `login_user()` with the `user` object.
+
+There is a corresponding logout view as well:
+
+```python
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return _continue_browsing()
+```
+- Note that we have this page is decorated with `@login_required`. This tells `Flask-Login` that this view must only be rendered if the user is logged in, otherwise it automatically redirects the user to the login page (and we set that in the `login_manager.login_view` property in `__init__.py`). 
+
+
+And finally, we have the view for registration, which adds new users to the platform (and to the DB).
+
+```python
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return _continue_browsing()
+
+    form = RegisterForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            try:
+                return _add_user_to_db(form)
+            except SQLAlchemyError:
+                flash("We couldn't register you due to a technical issue"
+                      " on our side. Please try again later.")
+        else:
+            flash("The form was not properly completed.")
+
+    return render_template("register.html", form=form)
+
+
+def _add_user_to_db(form):
+    user = User(id=token_hex(32),
+                email=form.email.data,
+                password_hash=User.hash_password(form.password.data),
+                name=form.name.data)
+    db.session.add(user)
+    db.session.commit()
+    login_user(user)
+    return _continue_browsing()
+```
+
+- As with the login page, a logged in user has no business being here.
+- It's a `GET` request, we just render the form and send that back.
+- Otherwise, once the form is validated, we create an `User` object and add that to the DB.
+  - The user id is generated using this function called `token_hex()`, available in the `secrets` module in Python (needs version >= 3.6).
+- In our app, we also log in the user who has registered. In most websites, this doesn't happen - they usually send a verification email to the email address and log the user in only after the user clicks on a link in that verification email.
+
+### Creating articles
+
+Adding new articles is not dissimilar from how we added new questions in the Quiz app in the last lecture.
+
+There a couple of new things though. We mentioned before that users are allowed to save articles in the draft state. This means that the form needs two buttons - one for "Publish", another for "Save"
+
+```python
+class CreatePostForm(FlaskForm):
+    title = StringField("Article Title", validators=[DataRequired()])
+    text = TextAreaField("Article Text", validators=[DataRequired()])
+    publish = SubmitField('Publish the article')
+    save = SubmitField('Save the article')
+```
+
+Then, at the time of addition to the DB, we need to make sure we don't set the `publish_date` in case the user just saves the article but not publish it.
+
+```python
+from datetime import datetime, timezone
+from secrets import token_urlsafe
+
+# form is created as follows
+# form = CreatePostForm(request.form)
+
+
+def _add_post_to_db(form):
+    article_id = token_urlsafe(16)
+    is_draft = True if form.save.data else False
+    publish_date = None if is_draft else datetime.now(timezone.utc)
+
+    if not is_draft and not form.validate():
+        flash("Not all required fields were filled.")
+        return _render_form(form)
+
+    article = Article(id=article_id,
+                      article_title=form.title.data,
+                      article_text=form.text.data,
+                      author_id=current_user.id,
+                      publish_date=publish_date)
+    db.session.add(article)
+    db.session.commit()
+
+    if is_draft:
+        flash("The article was saved.")
+        return _render_form(form)
+    else:
+        return redirect(url_for('view_post', id=article_id))
+```
+- The `article_id` is generated using `token_urlsafe` from the `secrets` module.
+- When there are two buttons, and the user submits the form using one of them, the `request.form` dictionary contains a key only for the button which was pressed. For example, if user pressed the `Save` button, then the dictionary will have the key `save` but not the key `publish`.
+- Thus, if `form.save.data` is not None, user has clicked `Save`, or `Publish` otherwise. We use this to know if the article is in draft state.
+- There are couple of things we need to differently if the article is in draft state:
+  - `publish_date` is None in this case.
+  - If it's not in the draft state, then we do form validation and make sure that both the title and the text of the article are present.
+  
+### Login required page
+
+We've already seen that the decoration `@login_required` makes the view only accessible to users who are already logged in. In addition to `logout` view, we have also added it to the `create_post` view. 
+
+For these pages, we need to redirect the user to login page (which `Flask-login` does automatically). After the user is logged in, we want to remember the page user was redirected from, and then redirected back.
+
+`Flask-login` comes to our rescue again. When a user is redirected to the login page, `Flask-login` sets a query parameter called `next` in the URL. For example, if we our website is `www.writer.com`, the request URL would like `www.writer.com/login?next=/create` which is telling the login page to send the user to `/create` after they are logged in.
+
+We can update our `login` given this knowledge:
+
+```python
+app.route('/login', methods=['GET', 'POST'])
+def login():
+    next_page = request.args.get('next')
+
+    if current_user.is_authenticated:
+        return _continue_browsing(next_page)
+
+    form = LoginForm(request.form)
+
+    if request.method == 'POST':
+            # ... authenticate and login user
+    
+                return _continue_browsing(next_page)
+            else:
+    
+    # ...
+    
+    login_action = (url_for('login') if next_page is None
+                    else url_for('login', next=next_page))
+    return render_template("login.html", form=form, login_action=login_action)
+
+
+def _continue_browsing(next_page=None):
+    # URL form: scheme://netloc/path;parameters?query#fragment
+    # If netloc is empty, it means the URL is relative, which we want to ensure
+    # so that we don't send our user to other domains.
+    if next_page and not url_parse(next_page).netloc:
+        return redirect(next_page)
+    else:
+        return redirect(url_for('all_posts'))    
+```
+
+- The query params can be extracted from the URL using `request.args.get()` method.
+- We've updated the function `_continue_browsing()` to take `next_page` as an argument, which is `None` by default.
+  - Since this is a user visible parameter, any malicious user/actor can change the value of next param. Before we use it, we need to ensure it's safe to use.
+  - In case it's present and safe to use, we redirect the user to that page.
+- An important thing to note is that you would receive the `next` param when you recieve a `GET` request for the login page. But, the redirection is required once the user submits the login form successfully. Thus, we need to persist the value of the `next` param till that happens.
+- To do that, we add the next query param to the action URL of the form by providing the action URL to the template.
+
+The template can then set form action using this URL instead of calling `url_for` itself, as follows:
+
+```html
+<form action="{{ login_action }}" method="POST">
+```
+
+ 

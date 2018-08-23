@@ -20,6 +20,9 @@ class User(UserMixin, db.Model):
     def hash_password(cls, password):
         return bcrypt.generate_password_hash(password).decode('utf-8')
 
+    def __repr__(self):
+        return"{0}: {1}".format(self.email, self.name)
+
 
 class Article(db.Model):
     id = db.Column(db.String(16), primary_key=True)
