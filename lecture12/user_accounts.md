@@ -586,12 +586,124 @@ def _continue_browsing(next_page=None):
   - Since this is a user visible parameter, any malicious user/actor can change the value of next param. Before we use it, we need to ensure it's safe to use.
   - In case it's present and safe to use, we redirect the user to that page.
 - An important thing to note is that you would receive the `next` param when you recieve a `GET` request for the login page. But, the redirection is required once the user submits the login form successfully. Thus, we need to persist the value of the `next` param till that happens.
-- To do that, we add the next query param to the action URL of the form by providing the action URL to the template.
+- To do that, we add the next query param to the action URL of the form by providing the action URL to the template. The `url_for` function adds any keyword arguments that you provide to it as query parameters in the URL. In this case, passing an argument like `next='/create'` adds `?next=/create` to the URL.
 
-The template can then set form action using this URL instead of calling `url_for` itself, as follows:
+The template can then set form action using this URL instead of it calling `url_for` itself, as follows:
 
 ```html
 <form action="{{ login_action }}" method="POST">
 ```
 
- 
+### Viewing articles
+
+For the view post page, we will use the same principle that we've applied before in assignments: that the link to the article should be sharable. This implies that the id of the article must be present in the url. The url to an article would look like: `www.writer.com/post?id=abcdef`, where `abcdef` is the article id we've assigned in the DB.
+
+The view function then becomes quite easy - we just have to read the DB for the article id and pass it to the template to view it. Here is how it can be implemented:
+
+```python
+from flask import request, render_template
+
+from writer import app
+from writer.db_tables import Article
+
+
+@app.route('/post', methods=['GET'])
+def view_post():
+    article_id = request.args.get('id')
+    if article_id is None:
+        return _article_not_found()
+
+    article = Article.query.get(article_id)
+    if article is None or article.publish_date is None:
+        return _article_not_found()
+
+    return render_template("view_post.html", article=article)
+
+
+def _article_not_found():
+    return "Article Not Found", 404
+```
+
+- There are three cases when we would return an "Article Not Found" message:
+  1. The query parameter `id` is not present in the URL.
+  2. There is no article corresponding to the value of the query parameter `id` in the URL (url is of the form ?id='blahblah').
+  3. If the `publish_date` is `None` for this article (indicating that the article is in draft status), we don't expose it to the public.
+- Note how you can specify the HTTP response code as the second argument of a tuple when returning a value to the view function.
+
+Given this implementation of the View Post page, we need to make sure that any link to the article creates the URL accordingly.
+
+### Navigation bar
+
+In a website like this, it's impossible for the user to navigate through the website unless there is a set of links consistently shown on all pages of the website. Furthermore, in a dynamic website like this, the navigation bar is also dynamic. Depending on the whether the user is logged in or not, the links shown on that navigation bar will change.
+
+The ideal way to implement the navigation bar is to write the code to generate it once, and then just include it in all the pages. Using the `{% include <filename> %}` directive in jinja2, that's exactly what we do.
+
+At first, let's create the file `navigation.html`, which only contains the HTML and template elements specific to the navigation bar:
+
+```html
+<a href="{{ url_for('all_posts') }} ">Home</a> |
+<a href="/not_implemented">Authors following</a> |
+<a href="{{ url_for('create_post') }}">Write</a> |
+{% if current_user.is_anonymous %}
+    <a href="{{ url_for('login') }}">Login</a>
+{% else %}
+    Hi {{ current_user.name }}
+    <a href="/not_implemented">Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+{% endif %}
+```
+
+- This is just a set of links separated by the pipe character.
+- We have access to the `current_user` object inside the template. 
+- Using its `is_anonymous` property, we can either display the **Login** link if no user is logged in, or display the name of the user, link to the **Profile** page and a **Logout** link when the user is logged in.
+- A couple of pages have the link `/not_implemented` because it's an exercise for you to implement those pages and update the navigation bar :-). (see below)
+
+To use this navigation bar, here is the template for `posts_list.html` which I have used for the home page to list all articles.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Articles | Writer</title>
+</head>
+<body>
+    {% include 'navigation.html' %}
+    <hr>
+
+    {% for article in articles %}
+        <p>
+            <b>
+                <a href="{{ url_for('view_post', id=article.id) }}" >
+                    {{ article.article_title }}</a>
+            </b><br>
+            Written By: {{ article.author.name }}
+        </p>
+
+    {% endfor %}
+
+</body>
+</html> 
+```
+
+- You can see that right after the `<body>` tag, I have the jinja directive `{% include 'navigation.html' %}` that simply copy pastes the contents of `navigation.html` here.
+- The `<hr>` tag creates a horizontal rule which visually separates navigation bar from the page contents.
+- I have added these two lines at the top of the `<body>` section in every template.
+
+
+### Following and Profile pages
+
+**Exercise:**
+
+These two pages are left as an exercise. Some things to keep in mind:
+
+- To add to the list of authors an user is following, a link is added to view post page close to author's name.
+- If the user is already following that author, then they should also be allowed to unfollow.
+- The `following` column in the `User` table is a JSON string containing the user ids of authors being followed. That means you'll be using the [json](https://docs.python.org/3/library/json.html) module.
+
+- For the profile page, your implementation should allow them to update their name and email.
+- It should also list all their articles, including the ones in draft mode (which label are labelel so) and give them an opportunity to 
+   - update, delete or move the published ones to draft status 
+   - update, delete or publish the ones in draft status.
+
+   
