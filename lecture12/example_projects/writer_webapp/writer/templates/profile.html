@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | Writer</title>
+</head>
+<body>
+    {% include 'navigation.html' %}
+    <hr>
+
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
+    {{ show_flashed_messages() }}
+
+    <form method="POST">
+        {{ profile_form.hidden_tag() }}
+        <p>
+            {{ profile_form.name.label }}:<br>
+            {{ profile_form.name(size=75) }}<br>
+            {{ show_field_errors(profile_form.name) }}
+        <p>
+            {{ profile_form.email.label }}:<br>
+            {{ profile_form.email(size=75) }}<br>
+            {{ show_field_errors(profile_form.email) }}
+        <p> {{ profile_form.update }}
+    </form>
+
+    {% for article in articles %}
+        <p>
+            <b>
+                <a href="{{ url_for('view_post', id=article.id) }}" >
+                    {{ article.article_title }}</a>
+            </b><br>
+        <form method="POST">
+            {{ article_update_forms[loop.index0].hidden_tag() }}
+            {{ article_update_forms[loop.index0].edit() }}
+            {{ article_update_forms[loop.index0].delete() }}
+        </form>
+
+    {% endfor %}
+</body>
+</html>

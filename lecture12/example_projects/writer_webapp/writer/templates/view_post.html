@@ -7,8 +7,23 @@
     {% include 'navigation.html' %}
     <hr>
 
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
+    {{ show_flashed_messages() }}
+
     <h2>{{ article.article_title }}</h2>
-    Author: <i>{{ article.author.name }}</i><br>
+    Author: <i>{{ article.author.name }}</i>
+    {% if following == True %}
+        Followed:
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.unfollow() }}
+        </form>
+    {% else %}
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.follow() }}
+        </form>
+    {% endif %}<br>
     Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
 
     <p>

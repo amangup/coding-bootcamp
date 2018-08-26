@@ -36,10 +36,7 @@ def login():
         else:
             print("Invalid or incomplete input.")
 
-    safe_next_page = _get_safe_url(next_page)
-    login_action = (url_for('login') if safe_next_page is None
-                    else url_for('login', next=safe_next_page))
-    return render_template("login.html", form=form, login_action=login_action)
+    return render_template("login.html", form=form)
 
 
 @app.route('/logout')

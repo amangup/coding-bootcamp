@@ -10,7 +10,7 @@
 
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
-    <form action="{{ login_action }}" method="POST">
+    <form method="POST">
         {{ form.hidden_tag() }}
         <p>
             {{ form.email.label }}:<br>
