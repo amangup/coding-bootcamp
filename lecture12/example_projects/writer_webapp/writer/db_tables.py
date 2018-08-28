@@ -43,3 +43,6 @@ class PasswordResetToken(db.Model):
     token_used = db.Column(db.Boolean, nullable=False)
 
     user = db.relationship("User", lazy=False)
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.token_hash, self.user_id)

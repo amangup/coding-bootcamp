@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>Login | Writer</title>
+    <title>Reset Password | Writer</title>
 </head>
 <body>
     {% include 'navigation.html' %}
     <hr>
-
-
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
     <form method="POST">
@@ -16,15 +14,8 @@
             {{ form.email.label }}:<br>
             {{ form.email(size=75) }}<br>
             {{ show_field_errors(form.email) }}
-        <p>
-            {{ form.password.label }}:<br>
-            {{ form.password(size=75) }}<br>
-            {{ show_field_errors(form.password) }}
 
-        <p>{{ form.login() }}
+        <p>{{ form.send_reset_email() }}
     </form>
-
-    <a href="{{ url_for('register') }}">Not registered?</a><br>
-    <a href="{{ url_for('password_reset_email') }}">Forgot password?</a>
 </body>
 </html>

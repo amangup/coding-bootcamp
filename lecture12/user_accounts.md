@@ -566,9 +566,7 @@ def login():
     
     # ...
     
-    login_action = (url_for('login') if next_page is None
-                    else url_for('login', next=next_page))
-    return render_template("login.html", form=form, login_action=login_action)
+    return render_template("login.html", form=form)
 
 
 def _continue_browsing(next_page=None):
@@ -585,13 +583,14 @@ def _continue_browsing(next_page=None):
 - We've updated the function `_continue_browsing()` to take `next_page` as an argument, which is `None` by default.
   - Since this is a user visible parameter, any malicious user/actor can change the value of next param. Before we use it, we need to ensure it's safe to use.
   - In case it's present and safe to use, we redirect the user to that page.
-- An important thing to note is that you would receive the `next` param when you recieve a `GET` request for the login page. But, the redirection is required once the user submits the login form successfully. Thus, we need to persist the value of the `next` param till that happens.
-- To do that, we add the next query param to the action URL of the form by providing the action URL to the template. The `url_for` function adds any keyword arguments that you provide to it as query parameters in the URL. In this case, passing an argument like `next='/create'` adds `?next=/create` to the URL.
+  
+  
+An important thing to note is that you would receive the `next` param when you receive a `GET` request for the login page. But, the redirection is required once the user submits the login form successfully. Thus, we need to persist the value of the `next` param till that happens.
 
-The template can then set form action using this URL instead of it calling `url_for` itself, as follows:
+This is quite easy to do. If we omit the `action` parameter in the `<form>` tag, the form submission is sent to the current URL, which is what we want. We can update the template as follows:
 
 ```html
-<form action="{{ login_action }}" method="POST">
+<form method="POST">
 ```
 
 ### Viewing articles

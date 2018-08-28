@@ -7,7 +7,7 @@
     {% include 'navigation.html' %}
     <hr>
 
-    {% from "macros.html" import show_flashed_messages, show_fie`d_errors %}
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
     <form method="POST">
         {{ form.hidden_tag() }}

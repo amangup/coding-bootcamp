@@ -24,6 +24,9 @@
     </form>
 
     <hr>
+    <a href="{{ url_for('password_reset_email') }}">Change your password</a>
+
+    <hr>
     <h2>Articles authored</h2>
     {% for article in articles %}
         <p>

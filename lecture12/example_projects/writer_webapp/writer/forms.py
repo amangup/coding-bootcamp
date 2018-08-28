@@ -45,3 +45,17 @@ class ArticleUpdateForm(FlaskForm):
     edit = SubmitField("Edit Article")
     delete = SubmitField("Delete Article")
     article_id = HiddenField("article_id")
+
+
+class ResetPasswordEmailForm(FlaskForm):
+    email = StringField("E-mail", validators=[DataRequired(), Email()])
+    send_reset_email = SubmitField("Send E-mail with Password Reset Link")
+
+
+class PasswordUpdateForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired(),
+                                                     Length(min=8,
+                                                            message=SMALL_PASSWORD_MESSAGE)])
+    repeat_password = PasswordField('Repeat Password',
+                                    validators=[DataRequired(), EqualTo('password')])
+    reset = SubmitField("Reset the password")
