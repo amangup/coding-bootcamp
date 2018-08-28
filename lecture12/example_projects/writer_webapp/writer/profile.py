@@ -1,6 +1,7 @@
+import sys
+
 from flask import request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import desc, nullsfirst
 from sqlalchemy.exc import SQLAlchemyError
 
 from writer import app, db
@@ -34,11 +35,9 @@ def _render_profile_page():
     profile_form.name.data = current_user.name
     profile_form.email.data = current_user.email
 
-    articles = Article.query.filter(Article.author_id == current_user.id) \
-        .order_by(desc(Article.publish_date)) \
-        .all()
-
-    print(articles)
+    articles = current_user.articles_written.copy()
+    articles.sort(reverse=True,
+                  key=lambda a: a.publish_date.timestamp() if a.publish_date else sys.maxsize)
 
     article_update_forms = []
     for article in articles:

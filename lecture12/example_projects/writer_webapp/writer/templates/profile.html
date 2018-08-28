@@ -23,12 +23,21 @@
         <p> {{ profile_form.update }}
     </form>
 
+    <hr>
+    <h2>Articles authored</h2>
     {% for article in articles %}
         <p>
             <b>
                 <a href="{{ url_for('view_post', id=article.id) }}" >
                     {{ article.article_title }}</a>
             </b><br>
+
+            {% if article.publish_date is none %}
+            <i>Draft</i>
+            {% else %}
+            Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
+            {% endif %}
+
         <form method="POST">
             {{ article_update_forms[loop.index0].hidden_tag() }}
             {{ article_update_forms[loop.index0].edit() }}

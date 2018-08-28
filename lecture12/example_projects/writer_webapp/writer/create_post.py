@@ -17,7 +17,7 @@ def create_post():
     article = None
     if article_id:
         article = Article.query.get(article_id)
-        if article is None:
+        if not article:
             return _article_not_found()
         if article.author_id != current_user.id:
             # In case someone is trying to edit another author's article,
@@ -31,7 +31,7 @@ def create_post():
         except SQLAlchemyError:
             flash("We couldn't add your article due to a technical issue"
                   " on our side. Please try again later.")
-    elif article is not None:
+    elif article:
         form.title.data = article.article_title
         form.text.data = article.article_text
 
