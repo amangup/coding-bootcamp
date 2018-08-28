@@ -3,7 +3,7 @@ import smtplib
 from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
 from flask import request, flash, redirect, render_template, url_for
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, logout_user
 from hashlib import blake2b
 from secrets import token_urlsafe
 from sqlalchemy.exc import SQLAlchemyError
@@ -36,9 +36,6 @@ def password_reset_email():
 
 @app.route('/update_password', methods=['GET', 'POST'])
 def update_password():
-    if current_user.is_authenticated:
-        redirect(url_for('all_posts'))
-
     token_id = request.args.get('token')
 
     if not token_id:
@@ -104,13 +101,19 @@ def _send_email(email, reset_token_id):
                                  token=reset_token_id)
     email_text = EMAIL_TEMPLATE.format(password_reset_url)
 
-    email_message = MIMEText(email_text)
-    email_message['Subject'] = EMAIL_SUBJECT
-    email_message['From'] = EMAIL_SENDER_ADDRESS
-    email_message['To'] = email
+    print (email_text)
 
-    with smtplib.SMTP('localhost') as smtp:
-        smtp.send_message(email_message)
+    # Normally we would use the code below to send email
+    # But to send emails, we need to setup an SMTP Email server
+    # which can take some effort.
+    #
+    # email_message = MIMEText(email_text)
+    # email_message['Subject'] = EMAIL_SUBJECT
+    # email_message['From'] = EMAIL_SENDER_ADDRESS
+    # email_message['To'] = email
+    #
+    # with smtplib.SMTP('smtp.server.com') as smtp:
+    #     smtp.send_message(email_message)
 
 
 def _show_reset_email_confirmation(email):
@@ -124,9 +127,14 @@ def _confirm_reset_link(email=None):
 
 
 def _reset_password(token_id, form):
-    token = _get_token(token_id)
+    token, message = _get_token(token_id)
+    if not token:
+        return message
+
+    logout_user()
+
     user = token.user
-    user.password_hash = User.password_hash(form.password.data)
+    user.password_hash = User.hash_password(form.password.data)
     token.token_used = True
 
     db.session.commit()
@@ -135,18 +143,27 @@ def _reset_password(token_id, form):
 
 
 def _show_reset_password_form(token_id):
-    token = _get_token(token_id)
+    token, message = _get_token(token_id)
     if not token:
-        return "The password reset token is not valid."
+        return message
 
-    current_time = datetime.now(timezone.utc)
-    if current_time > token.expiration:
+    logout_user()
+
+    current_time = datetime.utcnow()
+    if current_time > token.token_expiration:
         return "The password reset token has expired."
 
-    form = ResetPasswordEmailForm()
+    form = PasswordUpdateForm()
     return render_template("update_password.html", form=form)
 
 
 def _get_token(token_id):
     token_hash = blake2b(token_id.encode()).hexdigest()
-    return PasswordResetToken.query.get(token_hash)
+    token = PasswordResetToken.query.get(token_hash)
+    if not token:
+        return None, "The password reset token is not valid."
+
+    if token.token_used:
+        return None, "The password reset token has been used."
+
+    return token, None
