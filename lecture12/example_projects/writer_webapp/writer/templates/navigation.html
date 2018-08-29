@@ -1,6 +1,6 @@
-<a href="{{ url_for('all_posts') }} ">Home</a> |
-<a href="{{ url_for('following') }}">Authors following</a> |
-<a href="{{ url_for('create_post') }}">Write</a> |
+    <a href="{{ url_for('all_posts') }} ">Home</a> |
+    <a href="{{ url_for('following') }}">Authors following</a> |
+    <a href="{{ url_for('create_post') }}">Write</a> |
 {% if current_user.is_anonymous %}
     <a href="{{ url_for('login') }}">Login</a>
 {% else %}

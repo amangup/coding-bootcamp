@@ -27,7 +27,12 @@
     Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
 
     <p>
-    {{ article.article_text }}
+    <div id="article_text"></div>
 
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+      <script>
+        document.getElementById('article_text').innerHTML =
+          marked('{{ article.article_text }}');
+     </script>
+    </body>
 </html>
