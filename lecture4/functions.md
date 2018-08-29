@@ -283,23 +283,24 @@ You can use the name of the parameter to specify arguments. This method of speci
 ## Docstrings
 - Docstrings are a way to document the working or the purpose of a function, from the perspective of the user of that function.
   - Later, we will see that docstrings are used to document modules and classes as well.
-- Python3 supports creation of automatic documentation which reads these docstrings to create documentation.
+- There are ways to automatically create documentation which reads these docstrings to create documentation.
 
-Let's take the example of the `find_stat()` function we defined in the beginning and see how docstrings could be written for that. This is the content of a file using which I generated _pydocs_ automatically. 
+Let's take the example of the `find_stat()` function we defined in the beginning and see how docstrings could be written for that. This is the content of a file using which I generated documentation automatically. 
 
 ```python
 """This module contains functions to calculate statistics on data"""
 
+
 def find_stat(x, y, stat_type):
     """Finds a statistic value for the two values given as input.
-    
+
     Args:
-        x: first value
-        y: second value
-        stat_type: One of "average", "maximum", or "minimum"
-    
+        - x: first value  
+        - y: second value  
+        - stat_type: One of "average", "maximum", or "minimum"  
+
     Returns:
-          the outcome of running the chosen statistic on x and y       
+          - the outcome of running the chosen statistic on x and y
     """
     if stat_type == 'average':
         return (x + y) / 2.0
@@ -307,9 +308,12 @@ def find_stat(x, y, stat_type):
         return max(x, y)
     elif stat_type == 'minimum':
         return min(x, y)
+
 ```
 
-Now, if you run the command `pydoc3 -w ~/*.py `, it generated an html file for each python file. [Here is an example how of that looks.](http://htmlpreview.github.io/?https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/stats.html)
+Using [sphinx](http://www.sphinx-doc.org/en/stable/) as an automatic documentation tool, I created documentation automatically, which looks like this:
+
+![Sphinx doc screenshot](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture4/sphinx_doc.png)
 
 It is recommended that you write docstrings for every function (except any _private_ functions).
 
