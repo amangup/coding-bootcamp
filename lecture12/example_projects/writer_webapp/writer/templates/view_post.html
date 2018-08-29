@@ -31,8 +31,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
       <script>
+        article_text = String.raw`{{ article.article_text }}`;
         document.getElementById('article_text').innerHTML =
-          marked('{{ article.article_text }}');
+          marked(article_text, sanitize=true);
      </script>
     </body>
 </html>
