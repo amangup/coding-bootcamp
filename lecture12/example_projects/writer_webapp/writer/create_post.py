@@ -13,19 +13,32 @@ from writer.forms import CreatePostForm
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_post():
+    article_id = request.args.get('article_id')
+    article = None
+    if article_id:
+        article = Article.query.get(article_id)
+        if not article:
+            return _article_not_found()
+        if article.author_id != current_user.id:
+            # In case someone is trying to edit another author's article,
+            # just redirect to home page without any notice.
+            return redirect(url_for('all_posts'))
+
     form = CreatePostForm(request.form)
     if request.method == 'POST':
         try:
-            return _add_post_to_db(form)
+            return _add_post_to_db(form, article)
         except SQLAlchemyError:
             flash("We couldn't add your article due to a technical issue"
                   " on our side. Please try again later.")
+    elif article:
+        form.title.data = article.article_title
+        form.text.data = article.article_text
 
     return _render_form(form)
 
 
-def _add_post_to_db(form):
-    article_id = token_urlsafe(16)
+def _add_post_to_db(form, article):
     is_draft = True if form.save.data else False
     publish_date = None if is_draft else datetime.now(timezone.utc)
 
@@ -33,16 +46,24 @@ def _add_post_to_db(form):
         flash("Not all required fields were filled.")
         return _render_form(form)
 
-    article = Article(id=article_id,
-                      article_title=form.title.data,
-                      article_text=form.text.data,
-                      author_id=current_user.id,
-                      publish_date=publish_date)
-    db.session.add(article)
+    if article is None:
+        article_id = token_urlsafe(16)
+        article = Article(id=article_id,
+                          article_title=form.title.data,
+                          article_text=form.text.data,
+                          author_id=current_user.id,
+                          publish_date=publish_date)
+        db.session.add(article)
+    else:
+        article_id = article.id
+        article.article_title = form.title.data
+        article.article_text = form.text.data
+        article.publish_date = publish_date
+
     db.session.commit()
 
     if is_draft:
-        flash("The article was saved.")
+        flash("The article was saved as a draft.")
         return _render_form(form)
     else:
         return redirect(url_for('view_post', id=article_id))
@@ -50,3 +71,7 @@ def _add_post_to_db(form):
 
 def _render_form(form):
     return render_template('create_post.html', form=form)
+
+
+def _article_not_found():
+    return "Article Not Found", 404

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | Writer</title>
+</head>
+<body>
+    {% include 'navigation.html' %}
+
+    <section style="padding: 25px 50px 25px 50px;">
+
+    {% from "macros.html" import show_flashed_messages, show_field_errors %}
+    {{ show_flashed_messages() }}
+
+    <form method="POST">
+        {{ profile_form.hidden_tag() }}
+        <p>
+            {{ profile_form.name.label }}:<br>
+            {{ profile_form.name(size=75) }}<br>
+            {{ show_field_errors(profile_form.name) }}
+        <p>
+            {{ profile_form.email.label }}:<br>
+            {{ profile_form.email(size=75) }}<br>
+            {{ show_field_errors(profile_form.email) }}
+        <p> {{ profile_form.update }}
+    </form>
+
+    <hr>
+    <a href="{{ url_for('password_reset_email') }}">Change your password</a>
+
+    <hr>
+    <h2>Articles authored</h2>
+    {% for article in articles %}
+        <p>
+            <b>
+                <a href="{{ url_for('view_post', id=article.id) }}" >
+                    {{ article.article_title }}</a>
+            </b><br>
+
+            {% if article.publish_date is none %}
+            <i>Draft</i>
+            {% else %}
+            Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
+            {% endif %}
+
+        <form method="POST">
+            {{ article_update_forms[loop.index0].hidden_tag() }}
+            {{ article_update_forms[loop.index0].edit() }}
+            {{ article_update_forms[loop.index0].delete() }}
+        </form>
+
+    {% endfor %}
+    <section style="padding: 25px 50px 25px 50px;">
+
+</body>
+</html>

@@ -15,4 +15,4 @@ login_manager.login_view = "login"
 
 bcrypt = Bcrypt(app)
 
-from writer import db_tables, login_register, create_post, view_post, all_posts
+from writer import db_tables, login_register, create_post, view_post, all_posts, profile, update_password

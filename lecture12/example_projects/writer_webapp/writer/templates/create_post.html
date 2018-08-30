@@ -5,22 +5,32 @@
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
+
+    <section style="padding: 25px 50px 25px 50px;">
 
     {% from "macros.html" import show_flashed_messages %}
     {{ show_flashed_messages() }}
-    <form action="{{ url_for('create_post') }}" method="POST">
+    <form method="POST">
         {{ form.hidden_tag() }}
         <p>
             {{ form.title.label }}:<br>
             {{ form.title(size=100, required=False) }}
         <p>
             {{ form.text.label }}:<br>
-            {{ form.text(rows=10, cols=80, required=False) }}
+            {{ form.text(rows=10, cols=80, required=False, id="markdown-edit")}}
 
         <p>{{ form.publish() }}<br>
         {{ form.save() }}
-
     </form>
+    </section>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script>
+    new SimpleMDE({
+        element: document.getElementById("markdown-edit"),
+        spellChecker: false,
+    });
+    </script>
 </body>
 </html>

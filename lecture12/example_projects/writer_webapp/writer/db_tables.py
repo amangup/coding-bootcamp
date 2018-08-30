@@ -4,7 +4,7 @@ from writer import db, bcrypt
 
 class User(UserMixin, db.Model):
     id = db.Column(db.String(32), primary_key=True)
-    email = db.Column(db.String(320), unique=True, nullable=False)
+    email = db.Column(db.String(320), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(56), nullable=False)
     name = db.Column(db.String(100), nullable=False)
 
@@ -28,8 +28,21 @@ class Article(db.Model):
     id = db.Column(db.String(16), primary_key=True)
     article_title = db.Column(db.Text)
     article_text = db.Column(db.Text)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False,
+                          index=True)
     publish_date = db.Column(db.TIMESTAMP(timezone=True))
 
     def __repr__(self):
         return "{0}: {1}".format(self.id, self.article_title)
+
+
+class PasswordResetToken(db.Model):
+    token_hash = db.Column(db.String(128), primary_key=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('user.id'), nullable=False)
+    token_expiration = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    token_used = db.Column(db.Boolean, nullable=False)
+
+    user = db.relationship("User", lazy=False)
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.token_hash, self.user_id)
