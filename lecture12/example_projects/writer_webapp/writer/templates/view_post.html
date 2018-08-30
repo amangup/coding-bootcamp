@@ -20,6 +20,19 @@
         color: #aaa;
         font-size: 14px;
     }
+
+    .button {
+        background-color: #e7e7e7;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
     </style>
 </head>
 <body>
@@ -33,15 +46,14 @@
         <p class="article-meta"><b>Author:</b> article.author.name, <b>Published:</b> {{ article.publish_date.strftime("%d-%b-%Y") }}</p>
         {% if current_user.is_authenticated %}
         {% if following == True %}
-            Followed:
             <form method="POST">
                 {{ form.hidden_tag() }}
-                {{ form.unfollow() }}
+                {{ form.unfollow(class="button") }}
             </form>
         {% else %}
             <form method="POST">
                 {{ form.hidden_tag() }}
-                {{ form.follow() }}
+                {{ form.follow(class="button") }}
             </form>
         {% endif %}<br>
         {% endif %}
@@ -49,21 +61,5 @@
         <p>
         <div id="article_text">{{ article_text|safe }}</div>
     </article>
-    <!--<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
-      <!--<script>-->
-        <!--function pre_format(str) {-->
-            <!--return (str + '').replace('/\`/g', '\\`');-->
-        <!--}-->
-
-        <!--function post_format(str) {-->
-            <!--return (str + '').replace('/\\`/g', `\``);-->
-        <!--}-->
-        <!--article_text = '{{ article.article_text }}'-->
-        <!--print(article_text)-->
-        <!--article_text_raw = String.raw`${article_text}`;-->
-        <!--print(article_text_raw)-->
-        <!--document.getElementById('article_text').innerHTML =-->
-          <!--marked(article_text_raw, sanitize=true);-->
-     <!--</script>-->
     </body>
 </html>
