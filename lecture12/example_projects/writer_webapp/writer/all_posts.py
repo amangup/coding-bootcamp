@@ -15,15 +15,16 @@ def all_posts():
         .all()
     return render_template("posts_list.html", articles=articles)
 
+
 @app.route('/following')
 @login_required
 def following():
-    following = []
+    authors_following = []
     if current_user.following is not None:
-        following = json.loads(current_user.following)
+        authors_following = json.loads(current_user.following)
 
     articles = Article.query.filter(Article.publish_date.isnot(None)) \
-        .filter(Article.author_id.in_(following)) \
+        .filter(Article.author_id.in_(authors_following)) \
         .order_by(desc(Article.publish_date)) \
         .all()
     return render_template("posts_list.html", articles=articles)

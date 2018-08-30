@@ -104,7 +104,7 @@ def _send_email(email, reset_token_id):
     print (email_text)
 
     # Normally we would use the code below to send email
-    # But to send emails, we need to setup an SMTP Email server
+    # But, to send emails, we need to setup an SMTP Email server
     # which can take some effort.
     #
     # email_message = MIMEText(email_text)

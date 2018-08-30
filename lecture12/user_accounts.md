@@ -705,4 +705,170 @@ These two pages are left as an exercise. Some things to keep in mind:
    - update, delete or move the published ones to draft status 
    - update, delete or publish the ones in draft status.
 
+### Update password flow
+
+In this section, we will implement the user flow as is typically used by most websites:
+ - when you want to change your password, you enter your email and get a link in your email to reset the password.
+ - That link takes you to a page that can let you update the password.
+ 
+ Here is a flowchart of how the implementation of this logic looks like:
+ 
+ ![With Cookie](https://raw.githubusercontent.com/amangup/coding-bootcamp/master/lecture12/password_reset_flow.png)
+ 
+- In case someone has forgotten the password, we place our trust in the fact that the user has private access to their email.
+- To verify the user, we generate a random token and send provide the user with that token, on their email.
+- That token needs to be stored in a DB, along with an expiration date (token automatically expires after one hour) and whether it's already been used.
+  * To be extremely safe, we don't store the token itself, but its hash. The reason is that if the tokens DB's data leaks, that can't be used to reset passwords.
+- Once the user uses that token, if the token is valid, not expired and unused, we can allow the user to set a new password.
+
+The first new element to this is the DB in which store the password reset tokens. Here is the code for that:
+
+```python
+class PasswordResetToken(db.Model):
+    token_hash = db.Column(db.String(128), primary_key=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('user.id'), nullable=False)
+    token_expiration = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    token_used = db.Column(db.Boolean, nullable=False)
+
+    user = db.relationship("User", lazy=False)
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.token_hash, self.user_id)
+```
+- The primary key is the `token_hash`, which we'll use to find the token in the second part of the flow.
+- We have `token_expiration` and `token_used` fields, which are self explanatory
+- The `user_id` field is a foreign key to the `User` table to know which user is this token for.
+- We create a `db.relationship` to be able to access the user details more easily when we get the token. In this case, we've set `lazy=False` because we will need to know user details every time we get the token data.
+
+In the reset of the section, I am going to highlight a few import items to take care of.
+
+#### Password Reset Email page
+
+The first part of the flow is implemented in this view. To get an email from the user, we need to create a form, as follows:
+
+```python
+class ResetPasswordEmailForm(FlaskForm):
+    email = StringField("E-mail", validators=[DataRequired(), Email()])
+    send_reset_email = SubmitField("Send E-mail with Password Reset Link")
+```
+
+Once we've verified the email entered really does belong to a user of our website, we need to create a token and store those details in a DB.
+
+```python
+from datetime import datetime, timezone, timedelta
+from hashlib import blake2b
+from secrets import token_urlsafe
+
+
+def _add_reset_token_to_db(user):
+    reset_token_id = token_urlsafe(RESET_TOKEN_LENGTH)
+    token_hash = blake2b(reset_token_id.encode()).hexdigest()
+    token_expiration = datetime.now(timezone.utc) + timedelta(hours=1)
+
+    token = PasswordResetToken(user_id=user.id,
+                               token_hash=token_hash,
+                               token_expiration=token_expiration,
+                               token_used=False)
+    db.session.add(token)
+    db.session.commit()
+
+    return reset_token_id
+```
+
+- The token itself is generated from the `token_urlsafe()` function in the `secrets` module.
+- The _hash_ of the token is created using the `blake2b()` function in the `hashlib` module.
+  * You will note that this hash function is not the same as what we used for the password. There are two reasons why we use this one: first, this is very fast, and secondly, in the password hashing, we need to _salt_ it (add extra random characters to password before hashing), so that our password hash is not the same as any other website's hash of the same password. In the case of the reset token, this is not a problem as tokens are already unique.
+- We make it so that the token expires in one hour. This significantly reduces the chance that some malicious actor is able to intercept the token and then change the password without the real user noticing.
+
+To send an email, we have to use a module called `smtplib` in Python. Here is a link with some explanation on how email servers work using the **SMTP Protocol**: [https://www.makeuseof.com/tag/technology-explained-how-does-an-email-server-work/](https://www.makeuseof.com/tag/technology-explained-how-does-an-email-server-work/)
+
+The following code an example is a simple example and not realistic. This will not actually send an email because to do that we need a functioning email server. 
+
+```python
+import smtplib
+from email.mime.text import MIMEText
+
+EMAIL_SUBJECT = "Password Reset link"
+EMAIL_TEMPLATE = "Please use the link below to reset your password.\n{0}"
+EMAIL_SENDER_ADDRESS = 'noreply@mywriter.web'
+
+def _send_email(email, reset_token_id):
+    password_reset_url = url_for('update_password', _external=True,
+                                 token=reset_token_id)
+    email_text = EMAIL_TEMPLATE.format(password_reset_url)
+
+    email_message = MIMEText(email_text)
+    email_message['Subject'] = EMAIL_SUBJECT
+    email_message['From'] = EMAIL_SENDER_ADDRESS
+    email_message['To'] = email
+    
+    with smtplib.SMTP('smtp.server.com') as smtp:
+        smtp.send_message(email_message)
+```
+
+**Exercise:**
+To extend this code to make it work, you can use your Gmail/Yahoo/Outlook or any other email account to send these emails. Using `smtplib` to connect to these email services and sending emails is equivalent to using a desktop email to send email instead of using the website.
+
+Here are a couple of stack overflow links that can get you started for Gmail:
+- [https://stackoverflow.com/questions/10147455/how-to-send-an-email-with-gmail-as-provider-using-python](https://stackoverflow.com/questions/10147455/how-to-send-an-email-with-gmail-as-provider-using-python)
+- [https://stackoverflow.com/questions/26736062/sending-email-fails-when-two-factor-authentication-is-on-for-gmail#27130058](https://stackoverflow.com/questions/26736062/sending-email-fails-when-two-factor-authentication-is-on-for-gmail#27130058)
+
+In production websites, developers often use services like [SendGrid](https://sendgrid.com/) or [MailGun](https://www.mailgun.com/) to send emails which use HTTP based API to send emails.
+
+You can choose either method - SMTP server or using the email services described above (which you can test for free).
+
+#### Update password page
+
+This page is left as an **exercise**.
+- Create a page which allows the users to update their password once they click on the link. You would need to verify the token and another form to get their new password.
+- Design and implement a similar flow which confirms the user's email address. Whenever a new user registers, or an existing user changes their email id, the website should send an email to that id. Until the user's email is not verified, the user's account remains in _inactive_ state.
+
+### Using HTTPS
+
+Our website is not yet secure because we've not been using the HTTPS protocol to communicate with the client. Which means all the data that we get from the users through forms is susceptible.
+
+It's quite simple to enable HTTPS for testing locally. To do that, we need to:
+- Create a certificate which exposes our public key to the client.
+
+We can create the certificate as follows (run this in the same directory as `debug_server.py`) using the `openssl` tool (if it's not installed on your computer, search online for instructions).
+
+```
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+Generating a 4096 bit RSA private key
+...............................................................................................++++
+...................++++
+writing new private key to 'key.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:US
+State or Province Name (full name) [Some-State]:CA
+Locality Name (eg, city) []:San Francisco
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:SF Coding Bootcamp
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:localhost
+Email Address []:aman@mydomain.com
+```
+
+This creates two files `cert.pem` (which is the certificate containing the public key) and `key.pem` (which is the corresponding private key).
+
+- Run the flask app so that it uses that certificate.
+
+You can add an argument `ssl_context` to the `app.run()` method call as follows:
+
+```python
+app.run(host='127.0.0.1', port=8080, ssl_context=('cert.pem', 'key.pem'), debug=True)
+```
+
+This will make your website available at the address `https://127.0.0.1:8080/` (note the s). 
+But when you open that link, you browser will warn you that this website is not safe. This is because our certificate is not authorized by an independent organization which the browsers trusts to have _signed_ the certificate. You can add an exception though, to let this site through, and then you will be able to use your website using the HTTPS protocol.
+ 
+For production websites, we need to get a certificate from a third party, but discussing that is out of the scope of this tutorial. If you're interested, you should checkout [Let's Encrypt](https://letsencrypt.org/) using which you can get your HTTPS certificates for free by yourself.
+
+
    
