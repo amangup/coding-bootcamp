@@ -4,4 +4,4 @@
 
 There is also a [quiz](https://github.com/amangup/coding-bootcamp/blob/master/lecture4/quiz.md) which you can attempt. This quiz is designed to test your understanding of concepts learned in lectures 2-4.
 
-The assignments for this lecture are available at [this link](https://repl.it/data/classrooms/share/9eafa8dd60005b631d3e06159e4d1f87). You will need to sign up for [repl.it](https://repl.it) (don't check "I'm a teacher" when you sign up) before you click on the link above to join the "classroom" where you can attempt assignments.
+The assignments for this lecture are available at [this link](https://repl.it/classroom/invite/QU4L6OS). You will need to sign up for [repl.it](https://repl.it) (don't check "I'm a teacher" when you sign up) before you click on the link above to join the "classroom" where you can attempt assignments.
