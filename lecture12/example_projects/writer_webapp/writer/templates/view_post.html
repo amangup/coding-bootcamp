@@ -2,40 +2,68 @@
 <head>
     <meta charset="UTF-8">
     <title>View Article | Writer</title>
+    <style type="text/css">
+    body { font-family: sans-serif; }
+
+    h1 {
+        font-family: serif;
+        margin-bottom: 0;
+    }
+    article {
+        width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .article-meta {
+        font-family: sans-serif;
+        color: #aaa;
+        font-size: 14px;
+    }
+    </style>
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
 
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
 
-    <h2>{{ article.article_title }}</h2>
-    Author: <i>{{ article.author.name }}</i>
-    {% if following == True %}
-        Followed:
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.unfollow() }}
-        </form>
-    {% else %}
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.follow() }}
-        </form>
-    {% endif %}<br>
-    Published on: {{ article.publish_date.strftime("%d-%b-%Y") }}
+    <article>
+        <h1>{{ article.article_title }}</h1>
+        <p class="article-meta"><b>Author:</b> article.author.name, <b>Published:</b> {{ article.publish_date.strftime("%d-%b-%Y") }}</p>
+        {% if current_user.is_authenticated %}
+        {% if following == True %}
+            Followed:
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.unfollow() }}
+            </form>
+        {% else %}
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.follow() }}
+            </form>
+        {% endif %}<br>
+        {% endif %}
 
-    <hr>
+        <p>
+        <div id="article_text">{{ article_text|safe }}</div>
+    </article>
+    <!--<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
+      <!--<script>-->
+        <!--function pre_format(str) {-->
+            <!--return (str + '').replace('/\`/g', '\\`');-->
+        <!--}-->
 
-    <p>
-    <div id="article_text"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-      <script>
-        article_text = String.raw`{{ article.article_text }}`;
-        document.getElementById('article_text').innerHTML =
-          marked(article_text, sanitize=true);
-     </script>
+        <!--function post_format(str) {-->
+            <!--return (str + '').replace('/\\`/g', `\``);-->
+        <!--}-->
+        <!--article_text = '{{ article.article_text }}'-->
+        <!--print(article_text)-->
+        <!--article_text_raw = String.raw`${article_text}`;-->
+        <!--print(article_text_raw)-->
+        <!--document.getElementById('article_text').innerHTML =-->
+          <!--marked(article_text_raw, sanitize=true);-->
+     <!--</script>-->
     </body>
 </html>

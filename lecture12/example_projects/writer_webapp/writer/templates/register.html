@@ -2,11 +2,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Register | Writer</title>
+
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
 
+    <section style="padding: 25px 50px 25px 50px;">
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
     <form method="POST">
@@ -32,5 +33,6 @@
     </form>
 
     <a href="{{ url_for('login') }}">Already have an account?</a>
+    </section>
 </body>
 </html>

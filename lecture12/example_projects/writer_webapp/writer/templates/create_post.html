@@ -5,7 +5,8 @@
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
+
+    <section style="padding: 25px 50px 25px 50px;">
 
     {% from "macros.html" import show_flashed_messages %}
     {{ show_flashed_messages() }}
@@ -21,6 +22,7 @@
         <p>{{ form.publish() }}<br>
         {{ form.save() }}
     </form>
+    </section>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>

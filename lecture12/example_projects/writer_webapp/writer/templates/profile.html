@@ -5,7 +5,8 @@
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
+
+    <section style="padding: 25px 50px 25px 50px;">
 
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
@@ -48,5 +49,7 @@
         </form>
 
     {% endfor %}
+    <section style="padding: 25px 50px 25px 50px;">
+
 </body>
 </html>

@@ -5,7 +5,7 @@
 </head>
 <body>
     {% include 'navigation.html' %}
-    <hr>
+    <section style="padding: 25px 50px 25px 50px;">
     {% from "macros.html" import show_flashed_messages, show_field_errors %}
     {{ show_flashed_messages() }}
     <form method="POST">
@@ -17,5 +17,6 @@
 
         <p>{{ form.send_reset_email() }}
     </form>
+    </section>
 </body>
 </html>

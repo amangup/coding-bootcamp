@@ -1,10 +1,12 @@
-    <a href="{{ url_for('all_posts') }} ">Home</a> |
-    <a href="{{ url_for('following') }}">Authors following</a> |
-    <a href="{{ url_for('create_post') }}">Write</a> |
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<div class="w3-bar w3-border w3-light-grey">
+    <a href="{{ url_for('all_posts') }} " class="w3-bar-item w3-button w3-border-right">Home</a>
+    <a href="{{ url_for('following') }}" class="w3-bar-item w3-button w3-border-right">Authors following</a>
+    <a href="{{ url_for('create_post') }}" class="w3-bar-item w3-button w3-border-right">Write</a>
 {% if current_user.is_anonymous %}
-    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('login') }}" class="w3-bar-item w3-button w3-border-right">Login</a>
 {% else %}
-    Hi {{ current_user.name }}
-    <a href="{{ url_for('profile') }}">Profile</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <a href="{{ url_for('profile') }}" class="w3-bar-item w3-button w3-border-right">Profile</a>
+    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-border-right">Logout</a>
 {% endif %}
+</div>
