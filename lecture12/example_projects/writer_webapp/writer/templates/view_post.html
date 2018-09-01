@@ -43,7 +43,7 @@
 
     <article>
         <h1>{{ article.article_title }}</h1>
-        <p class="article-meta"><b>Author:</b> article.author.name, <b>Published:</b> {{ article.publish_date.strftime("%d-%b-%Y") }}</p>
+        <p class="article-meta"><b>Author:</b> {{ article.author.name }}, <b>Published:</b> {{ article.publish_date.strftime("%d-%b-%Y") }}</p>
         {% if current_user.is_authenticated %}
         {% if following == True %}
             <form method="POST">

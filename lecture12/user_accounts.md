@@ -867,8 +867,7 @@ app.run(host='127.0.0.1', port=8080, ssl_context=('cert.pem', 'key.pem'), debug=
 
 This will make your website available at the address `https://127.0.0.1:8080/` (note the s). 
 But when you open that link, you browser will warn you that this website is not safe. This is because our certificate is not authorized by an independent organization which the browsers trusts to have _signed_ the certificate. You can add an exception though, to let this site through, and then you will be able to use your website using the HTTPS protocol.
- 
-For production websites, we need to get a certificate from a third party, but discussing that is out of the scope of this tutorial. If you're interested, you should checkout [Let's Encrypt](https://letsencrypt.org/) using which you can get your HTTPS certificates for free by yourself.
 
+If you're uploading your website on `pythonanywhere.com` with a domain name like `username.pythonanywhere.com`, then HTTPS is supported by default, you don't have to install any certificate. On the **Web** tab at `pythonanywhere.com`, enable **Force HTTPS** in the **Security** section on that page.
 
-   
+For most production websites, we need to get a certificate from a third party, but discussing that is out of the scope of this tutorial. If you're interested, you should checkout [Let's Encrypt](https://letsencrypt.org/) using which you can get your HTTPS certificates for free by yourself.
