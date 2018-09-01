@@ -95,17 +95,17 @@ Output: 108
 ## 4: Sum of digits part 3
 
 What are all the numbers > 0 who sum of digits = 2? They are the following:
-2
-11
-20
-101
-110
-200
-1001
+2  
+11  
+20  
+101  
+110  
+200  
+1001  
 
 and so on.
 
-If we were to limit the possible candidates to those numbers which has exactly 3 digits, then we find that there 3 such numbers.
+If we were to limit the possible candidates to those numbers which has exactly 3 digits, then we find that there three such numbers.
 
 Write a function that takes as input as sum of digits and the number of digits, and returns the count of numbers satisfying that criteria.
 
@@ -187,7 +187,7 @@ print(num_paths_walking(1, 'A', 3, 'C'))
 Output is: 6
 ```
 
-Part 2:
+**Part 2:**
 Now suppose you are driving a car, and can't go the wrong way on one way streets. How many ways are there to reach the destination from  the starting intersection while travelling the least distance possible?
 
 e.g.
@@ -397,7 +397,7 @@ def exp_fast(num, power):
 
 </details>
 
-## 7:
+## 7: City travel
 
 <details>
 <summary>Show code:</summary>
