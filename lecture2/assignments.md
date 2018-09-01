@@ -376,10 +376,15 @@ print("%s %s" % (ascii_first, ascii_second))
 
 ## 14: Print formatting
 
+<details>
+<summary>Show code:</summary>
+
 ```python
 real_num = float(input("Enter a real number:"))
 print ("%.2f" % real_num)
 ```
+
+</details>
 
 ## 15: Bill for items
 
