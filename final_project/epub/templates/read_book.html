@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Read Book</title>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='book.css') }}">
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <h1>{{ title }}, by {{ author }}</h1>
+    </div>
+    <div class="left">
+        <a href="#" id="prev_page" class="centerme prev round">&#8249;</a>
+    </div>
+    <div class="content" id="book"></div>
+    <div class="right">
+        <a href="#" id="next_page" class="centerme next round">&#8250;</a>
+    </div>
+</div>
+<script>
+      var book = ePub("{{ book }}");
+      var rendition = book.renderTo("book", {
+          method: "default",
+          spread: "always",
+          width: "100%",
+          height: 600
+      });
+      cfi = "{{ cfi }}"
+      if (cfi.Length > 0) {
+        rendition.display("{{ cfi }}")
+      } else {
+        rendition.display()
+      }
+
+      book.ready.then(() => {
+
+          var next = document.getElementById("next_page");
+
+          next.addEventListener("click", function(e){
+            book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
+            e.preventDefault();
+          }, false);
+
+          var prev = document.getElementById("prev_page");
+          prev.addEventListener("click", function(e){
+            book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
+            e.preventDefault();
+          }, false);
+
+          var keyListener = function(e) {
+            // Left Key
+            if ((e.keyCode || e.which) == 37) {
+              book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
+            }
+
+            // Right Key
+            if ((e.keyCode || e.which) == 39) {
+              book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
+            }
+
+          };
+
+          rendition.on("keyup", keyListener);
+          document.addEventListener("keyup", keyListener, false);
+      })
+
+      var SYNC_PERIOD_MS = 5000
+
+      function syncLocation() {
+          $.post("{{ url_for('location_sync') }}",  {
+                cfi: rendition.location.start.cfi
+            },
+            function(data, status) {
+                console.log(data + "," + status);
+                // schedule the next invocation
+                setTimeout(syncLocation, SYNC_PERIOD_MS);
+            }
+          );
+      }
+
+      // schedule the first invocation:
+      setTimeout(syncLocation, SYNC_PERIOD_MS);
+    </script>
+</body>
+</html>

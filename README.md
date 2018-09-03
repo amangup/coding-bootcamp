@@ -56,6 +56,23 @@ We get introduced to the concept of databases and learn how we can use them to m
 
 The assignments make you extend that quiz app further, and make it full featured enough to be an useful product for people to use.
 
+### Lecture 12 - Web Apps with user accounts
+We learn to build apps that have user accounts. We understand how user sessions work behind the scenes, and learn to implement all flows for management of user details (profile update, password reset, etc.).
+
+We also understand the basics of security, and learn to implement some ways to make sure our data storage mechanisms and connections are secure.
+
+There are no separate assignments. The tutorial has exercises and that should give you some good experience.
+
+### Lecture 13 - Testing
+
+(Upcoming)
+
+
+### Final Project
+
+Specifications for the web app which implements an online ebook reader.
+
+
 # Installing Python on your computer
 
 Follow the instructions below to install Python interpreter and PyCharm Integrated Development Environment on your computer.
