@@ -24,7 +24,7 @@ In addition to above features, creating an account leads to these additional ben
 The global libary of ebooks, or even personal libraries, can potentially include hundreds or even thousands of ebooks. Here are some suggestions which can make it easier to find what want to read:
 
 - Navigation which uses the letters of the alphabet to help choose the book - either by the title, or by the author name.
-- A search bar that finds books which that word in the title or in the author fields of the book.
+- A search bar that finds books with that word in the title or in the author fields of the book.
 
 ## Implementation considerations
 
