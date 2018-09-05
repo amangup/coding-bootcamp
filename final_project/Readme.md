@@ -1,6 +1,6 @@
 # Final Project
 
-In the final project, we will create an ebook reader web app which allows anyone to read books which we've made available (using books available in the free domain), and allow users to upload their own as well (as a stretch goal).
+In the final project, you will create an ebook reader web app which allows anyone to read books which we've made available (using books available in the free domain), and allow users to upload their own as well (as a stretch goal).
 
 ## Features
 
@@ -24,21 +24,21 @@ In addition to above features, creating an account leads to these additional ben
 The global libary of ebooks, or even personal libraries, can potentially include hundreds or even thousands of ebooks. Here are some suggestions which can make it easier to find what want to read:
 
 - Navigation which uses the letters of the alphabet to help choose the book - either by the title, or by the author name.
-- A search bar that finds books with that word in the title or in the author fields of the book.
+- A search bar that finds books with the words entered in the title or in the author fields of the book.
 
 ## Implementation considerations
 
 ### E-book format
 
-The web app will support the [ePUB e-book format](https://en.wikipedia.org/wiki/EPUB). This is a widely used format to store ebooks, and most books available to download online are shared in this format.
+The web app will support the [ePUB e-book format](https://en.wikipedia.org/wiki/EPUB). This is a widely used format to store and share ebooks, and most books available to download online are shared in this format.
 
 ePub format contains the _metadata_ of the book (title, author, etc.), and also includes the whole contents of the book formatted in a readable manner. We need to be able to extract that metadata, and also render the book in the browser. 
 
 #### Reading ePUB metadata
 
-I have included a file called `epub_metadata.py` in this folder which has an example code to extract the book details from the epub file. Note that it needs an external dependency `lxml` to be installed.
+I have included a file called `epub_metadata.py` in this folder which has example code to extract the book details from the epub file. Note that it needs an external dependency `lxml` to be installed.
 
-For all the ebooks on the web app, you will need to extract the metadata from the book and store in a DB table.
+For all the ebooks on the web app, you will need to extract the metadata from the book and store it in a DB table.
 
 #### Rendering ePUB books
 
@@ -56,17 +56,17 @@ return render_template("read_book.html", cfi=cfi_location, title=title, author=a
  
 ### Synchronizing read location
 
-To implement this feature, we need to use AJAX. Periodically, the javascript in the page will find the location at which the user is in the book, and send a POST HTTP request to our web app. The web app must build a view to receive that request, and then update the location for that book in the user records.
+To implement this feature, we need to use AJAX. Periodically, the javascript in the page will find the location at which the user is at, in the book, and send a POST HTTP request to our web app. The web app must build a view to receive that request, and then update the location for that book in the user records.
 
-The read location is encoded as an [ePUB Canonical Fragment Identifier](http://www.idpf.org/epub/linking/cfi/epub-cfi.html), or ePUB CFI. This is a string that identifies the exact the location in one specific book (it will not work on another book). It can look like this:
+The read location is encoded as an [ePUB Canonical Fragment Identifier](http://www.idpf.org/epub/linking/cfi/epub-cfi.html), or ePUB CFI. This is a string that identifies the exact location in one specific book (it will not work on another book). It can look like this:
 
 ```
 epubcfi(/6/2[item58]!/4/66[THE_OUTDOOR_LABORATORY]/2/1:387)
 ```
 
-In the javascript code in `read_book.html` template, I have already implemented this mechanism which sends an update to the view `location_sync()`, every few seconds. The data sent (CFI string) is available in the `request.form["cfi"]` (ignore the fact that we are using `request.form` even though there is no form).
+In the javascript code in `read_book.html` template, I have already implemented the mechanism which sends an update to the view `location_sync()` every few seconds. The data sent (CFI string) is available using the expression `request.form["cfi"]` (ignore the fact that we are using `request.form` even though there is no form).
 
-When opening a book to read, you can provide this CFI string as `cfi` parameter to the template. If the parameter is an empty string, then the book opens at the beginning.
+When opening a book to read, you can provide this CFI string as the `cfi` parameter to the template. If the parameter is an empty string, then the book opens at the beginning.
 
 ### Uploading books
 
@@ -74,4 +74,4 @@ Look at [this section](https://github.com/amangup/coding-bootcamp/blob/master/le
 
 ## Deploying the website
 
-When you are developing (and when its complete) keep deploying the website at PythonAnywhere.com to make sure everything works as intended. Make sure that use of HTTPS protocol is enforced.
+When you are developing (and when its complete), keep deploying the website at PythonAnywhere.com to make sure everything works as intended. Make sure that use of HTTPS protocol is enforced.
