@@ -176,3 +176,21 @@ a: Every month's output is correct
 b: m = 2  
 c: m = 7  
 d: m = 8  
+
+**Question 9**
+```python
+def sum(n, sum=100):
+  if n == 0 or n == 1:
+    return n
+  else:
+    return (n - 1, sum + n)
+
+print(sum(5))
+```
+
+Options:  
+a: 15  
+b: 14  
+c: 115  
+d: 114  
+
