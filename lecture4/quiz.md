@@ -179,11 +179,11 @@ d: m = 8
 
 **Question 9**
 ```python
-def sum(n, sum=100):
+def sum(n, total=100):
   if n == 0 or n == 1:
     return n
   else:
-    return (n - 1, sum + n)
+    return sum(n - 1, total + n)
 
 print(sum(5))
 ```
