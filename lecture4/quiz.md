@@ -181,7 +181,7 @@ d: m = 8
 ```python
 def sum(n, total=100):
   if n == 0 or n == 1:
-    return n
+    return total + n
   else:
     return sum(n - 1, total + n)
 
