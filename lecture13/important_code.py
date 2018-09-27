@@ -3,12 +3,16 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 
 
+
 def abs_diff(a, b):
     diff = a - b
     if diff < 0:
         diff = -1 * diff
 
     return diff
+
+args = {'a': 3, 'b': 1}
+print(abs_diff(**args))
 
 
 class Series:
