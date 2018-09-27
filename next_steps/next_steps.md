@@ -24,7 +24,7 @@ A fundamental skill, in addition to being able to write code, is to be able to u
 - Most teams also have a range of people who have more experience and some people who are newbies. Mentoring new programmers is usually an essential part of the role of experienced team members.
 - It's uncommon for any one software engineer to know all the technologies being used for building a certain product. 
 
-My point is that no programming team expects to hire engineers who know how to deliver the product from start to end by themselves. There is little point in building your capabilities to be able to do that. Instead, it's more useful to make yourselves comfortable with working as part of a team, and learn from experience members of your team.
+My point is that no programming team expects to hire engineers who know how to deliver the product from start to end by themselves. There is little point in building your capabilities to be able to do that. Instead, it's more useful to make yourselves comfortable with working as part of a team, and learn from the experienced members of your team.
 
 ## What kind of programming jobs exist?
 
