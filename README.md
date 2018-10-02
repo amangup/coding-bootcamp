@@ -13,8 +13,6 @@ This the list of topics we discuss in the lecture series.
 
 The lectures are designed to teach enough Python for one to be able to write meaningful real life applications themselves. The final project is to create a web app which is an online E-book reader. I will also discuss the ways you can use this learning to become a professional programmer in the last lecture.
 
-Currently, the first bootcamp session is not complete, and thus more lectures will be created in the following weeks. I will keep updating this page when new lectures get added.
-
 ### Lecture 1 - What is programming?
 The first lecture introduces what a computer is, and what programming is. In the class, we also write our first little program.
 
@@ -73,7 +71,7 @@ Specifications for the web app which implements an online ebook reader.
 
 ### Next Steps
 
-In this lecture, I describe what a professional programmer does, what choices do you have for a programming job, and how you can switch or improve your programming career even if you don't have a CS degree or professional programming experience.
+In this lecture, I describe what a professional programmer does, what choices do you have for a programming job, and how you can switch to or improve your programming career even if you don't have a CS degree or professional programming experience.
 
 # Installing Python on your computer
 
