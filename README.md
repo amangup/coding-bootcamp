@@ -64,14 +64,16 @@ We also understand the basics of security, and learn to implement some ways to m
 There are no separate assignments. The tutorial has exercises and that should give you some good experience.
 
 ### Lecture 13 - Testing
-
-(Upcoming)
+Learn about testing your code - writing tests, writing testable code, etc. Testing is one of the most crucial aspect of programming. It's also one of those things that many programming classes omit, and that's a shame in my view - as in professional work it is critically important to test your code.
 
 
 ### Final Project
 
 Specifications for the web app which implements an online ebook reader.
 
+### Next Steps
+
+In this lecture, I describe what a professional programmer does, what choices do you have for a programming job, and how you can switch or improve your programming career even if you don't have a CS degree or professional programming experience.
 
 # Installing Python on your computer
 

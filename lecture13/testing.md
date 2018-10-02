@@ -1,12 +1,12 @@
 # Testing
 
-In this lecture we will learn how to write tests for our code. The goal of testing is to make sure our code works as intended, and when working as part of a team, it ensures that incremental changes to break existing functionality.
+In this lecture we will learn how to write tests for our code. The goal of testing is to make sure our code works as intended, and it ensures that incremental changes to break existing functionality (especially, when that incremental change is being written by someone other than the original author).
 
 ## Code defects
 
-We've spent a lot of time to learn to write code. But, we've also realized that it is not always easy to get the code work correctly all the time. This realization is formalized by the term _code defect_, which means that for some input case, the code doesn't function as intended.
+We've spent a lot of time to learn to write code. We've also realized that it is not always easy to get the code work correctly all the time. This realization is formalized by the term _code defect_, which means that for some input case, the code doesn't function as intended.
 
-Code defects are measured as the count of of _defects_ per 1000 lines. According to some online sources, the typical defect rate in the industry is 10-30 defects per 1000 lines of code. Obviously, everyone would want to have 0 defects in their code, but in reality the effort and time required to write such code is simply not practical. Also, it depends on what the code is intended to do - for an internal data analysis code which is used to get a rough idea how well a product is working, maybe some code defects are fine. But, if the code is controlling the NASA space shuttle, we would prefer to have no defects at all.
+Code defects are commonly measured as the number of defects in 1000 lines of code. According to some online sources, the typical defect rate in the industry is 10-30 defects per 1000 lines of code. Obviously, everyone would want to have 0 defects in their code, but in reality the effort and time required to write such code is just not practical. Also, it depends on what the code is intended to do - for some data analysis code used internally in a team to get a rough idea how well a product is working, maybe some code defects are fine. But, if the code is controlling the NASA space shuttle, we would prefer to have no defects at all.
 
 Given that it's almost impossible to have no code defects, should we just assume that defects are OK and put no effort in containing them? Again, it's obvious that a large number of code defects is not OK. If we were building a website and the user got a 500 Internal Server Error every two minutes, we would eventually lose all users.
 
@@ -16,11 +16,11 @@ There are some practices we can follow which can help reduce code defects. The m
 
 Here are some general practices that software companies do to reduce code defects. 
 .
-- **KISS** (short for _Keep it Simple, Stupid_). One of the most important ways to reduce code defects is keeping your code as simple as possible. Finding simple solutions to problems is worth the extra effort to reduce mistakes in implementation.
-- **Write less code**. If there is no code, there are no defects :-). In my experience, programmers tend to solve for use cases that don't exist in reality, or in their attempt to make the program _future-proof_, introduce code that never actually gets used. Such practices makes the code have more defects even in the functionality that is needed right now.
-- **Write good code**. _Good_ code is easily understandable, and follows principles that, when followed, reduce the chance of introducing an error.
-- **Have good documentation**. In many companies, the programmers are treated as just _coders_ who write code to execute someone else's will. In my experience, that frequently results in wrong implementations because the programmers are not clear on the purpose of the code they're writing. Having good documentation and spreading awareness of why we're doing the things the way we are doing helps immensely in reducing defects. I have seen companies lose millions of dollars and reputation due to bugs in code caused due to this reason.
-- **Write tests**. A test is code that checks whether your main code is running correctly. By writing tests, you can ensure that your code handles the use cases correctly. Even more importantly, tests ensure that when changes are made to the main code, the original functionality remains correctly implemented (otherwise, the tests would fail). In my work, the amount of time that goes into implementation of functionality is about _half_ the time I spend in writing tests for that implementation (and usually the lines of test code is more than the lines of code in the implementation as well).
+- **KISS** (short for _Keep it Simple, Stupid_). One of the most important ways to reduce code defects is keeping your code as simple as possible. Finding simple solutions to problems is worth any extra effort as it helps to reduce the number of mistakes in the implementation.
+- **Write less code**. If there is no code, there are no defects :-). In my experience, programmers tend write more code than necessary - sometimes to solve for use cases that don't exist in reality, or in their attempt to make the program _future-proof_, introduce code that never actually gets used. Such practices will likely add more defects even in the functionality that is needed right now.
+- **Write good code**. _Good_ code is easily understandable, and follows principles that, when followed, reduce the chance of introducing an error. Many books are written to help programmers learn "good coding".
+- **Understand requirements and have good product documentation**. In many companies, the programmers are treated as just _coders_ who write code to execute someone else's will. In my experience, that frequently results in wrong implementations because the programmers are not clear on the purpose of the code they're writing. Having good documentation and spreading awareness of why we're doing the things the way we are doing helps immensely in reducing defects. I have seen companies lose millions of dollars and reputation due to bugs in code caused due to this reason.
+- **Write tests**. A _test_ is a program that checks whether your main code is running correctly. By writing tests, you can ensure that your code handles the use cases correctly. Even more importantly, tests ensure that when changes are made to the main code, the original functionality remains correctly implemented (otherwise, the tests would fail). In my work, the amount of time that goes into implementation of functionality is about _half_ the time I spend in writing tests for that implementation (and usually the lines of test code is more than the lines of code in the implementation as well).
 
 ## A unit test
 
@@ -143,7 +143,7 @@ A test failure shows that something is wrong.
 
 ## Test Example Two: Test a class
 
-This is an example from the **Series** assignment in the `Classes` set. On repl, the automatic testing uses unit tests to check if your code is correct.
+This is an example from the **Series** assignment in the `Classes` set. On repl.it, the automatic testing uses unit tests to check if your code is correct.
 
 ```python
 import math
@@ -194,7 +194,7 @@ class TestPiSeries:
 - For the case of `TestPiSeries`, our assertion looks different. This is because the output of our series will not be exactly equal Pi / 4, but be close to it.
    - The value of `abs_tol` is set to 0.0001 (= `1E-4`, which is _1 raised to power -4_). The function `math.isclose()` function checks if the difference of two values is less than `abs_tol`.
    
-If we change the value of EPSILON to `1E-10`, then the test fails:
+If we change the value of EPSILON to `1E-10`, then the test fails (why?):
 
 ```
 =================================== FAILURES ===================================
@@ -260,12 +260,13 @@ Don't scroll down
 
 ```
 
-- If you've spent enough time thinking, there is no easy way to test this (because the hour of day is different depending on when the test is run). The only real option is to duplicate the whole functionality in the test as well, and see if the output matches. There is no point in testing some code if the test code itself has to duplicate the main code.
-- This is an example of non-testable code. It has meaningful functionality but we can't test that functionality.
-  - Part of paradigms for good coding is to write testable code. Untestable code should be an extreme exception.
+- If you've spent enough time thinking, there is no easy way to test this because the hour of day is different depending on when the test is run (and you don't want your test to pass only when run at certain times of the day!).
+- This is an example of hard-to-test code. It has meaningful functionality but we can't test that functionality easily.
+  - Part of the set of paradigms for good coding is to write testable code. Untestable code should be an extreme exception.
 
-A test has to provide an input and check if the output matches an expectation. Our current implentation of the function takes no input from the caller.
-We can change the function above to take the hour as input:
+Essentially, A test provides an input to your code and checks if the output matches an expectation. Our current implementation of the function takes no input from the caller.
+
+To make our code more easily testable, we can change the function `day_period()` to take the hour as input:
 
 ```python
 from datetime import datetime
@@ -291,7 +292,7 @@ print ("Good %s, senorita!" % day_period(current_hour))
 
 ## Testing Flask apps
 
-Since we've spent written a lot of flask apps, we should discuss how to unit tests for that.
+Since we've spent written a lot of flask apps, we should discuss how to write unit tests for that.
 
 - The unit for testing in this case would be the view function.
   - The input to a view function is the `request`. 
@@ -373,10 +374,13 @@ def dictionary_home_impl(request):
 
 This looks like a lot of code, but the new code can be shared across all view functions, so it needs to be written only once.
 
-- Our main aim is to implement a function that can take `request` as an argument, and respond with the details we need to check for correctness and not the exact HTML or HTTP response.
-- For the first aspect, we create a new function called `dictionary_home_impl()` which has the real logic for the view function, and takes request as an argument. **This is the function we will unit test.**
-- For the second aspect, we have created a new class `ViewFunctionResponse` which captures possible responses from the view function. The new function we have written `dictionary_home_impl()` returns an object of this class we can test.
-- The main view function `dictionary_home()` (which we have registered with Flask) just calls the `dictionary_home_impl()` and uses the helper function in the class `ViewFunctionResponse` to get the HTTP response to return to Flask. We can leave this untested, and practically all of the logic is outside this function, this is not a major problem.
+- Our main aim is to implement a function that can take `request` as an argument, and respond with the _details_ we need to check for correctness, not the exact HTML or HTTP response.
+- For the first aspect, we create a new function called `dictionary_home_impl()` which has the actual logic for the view function, and takes `request` as an argument. **This is the function we will unit test.**
+- For the second aspect, we have created a new class `ViewFunctionResponse` which captures possible responses from the view function. The new function that we have written - `dictionary_home_impl()` - returns an object of this class.
+- The main view function `dictionary_home()` (which we have registered with Flask) just calls the `dictionary_home_impl()` with `request`. 
+- Since `dictionary_home_impl()` responds with an object `ViewFunctionResponse` and the Flask view function needs to return an HTML response, we've written a helper function called `get_http_response()`. 
+   - The view function `dictionary_home()` uses that get to the HTTP response. 
+- We can leave this function untested. As practically all of the logic is outside this function, this is not a major problem.
 
 Now, we can write the test as follows:
 
@@ -408,9 +412,78 @@ class TestDictionaryHome:
 ```
 
 - We have created a new class called `MockRequest`, which contains the parameters for request method and the data gathered from the form (in case of POST request).
+   - Note that Python doesn't need `request` to be of specific type. It just needs the attributes that you access from the object to exist.
 - In each test case, we create a Mock Request with an appropriate values for its parameters and call the function we are testing with that request (`dictionary_home_impl()`).
 - Since this function returns an object of type `ViewFunctionResponse`, we can assert the values of it's data attributes to check if the response is correct.
 
 
+This example can be used as a pattern to write unit tests for Flask apps (in fact, I haven't found any good solution on the internet for unit-testing Flask apps). But there are a few more reasons why I wanted to show you this method:
 
-  
+- It is another way to make the point about what is testable code. Having easy ways to set input and fetch the output are important.
+- If I were on the team writing Flask, I would not have chosen their approach to writing view functions. They clearly overlooked testability, or assumed people will find round-about ways for it.
+- It's not always the case that the platforms you're using are designed to make your app easily testable. But, you can find ways to make _your_ code testable, as shown in this section.
+
+## Test Coverage
+
+Let's say you've learnt about testing and have spent some time writing tests. How can you be sure that your code is well tested?
+
+There are metrics to indicate how well tested your code is, and the most important one is called **Coverage**. It's very commonly used in programming teams. But, as we will learn below, there is no single metric that you can rely on to say that your code is well tested, and this holds true for coverage as well. 
+
+I will focus on explaining what coverage is, but not on how to actually run coverage analysis for your code. It's quite easy to do yourself, and you can read about it here: https://coverage.readthedocs.io/en/coverage-4.5.1x/.
+
+### Definition of coverage
+
+Let's go back to our first example on testing, and modify the test a bit:
+
+```python
+1: def abs_diff(a, b):
+2:    diff = a - b
+3:    if diff < 0:
+4:        diff = -1 * diff
+6:    return diff
+```
+
+```python
+from important_code import abs_diff
+
+
+class TestAbsDiff:
+    def test_positive(self):
+        assert 1 == abs_diff(2, 1)
+```
+
+- In the test, I've removed the test case `test_negative()`. Thus, we are not validating if the function `abs_diff()` runs correctly when `a < b`.
+- If we run our sole test, the `if` clause on line 3 is always `False`. Thus, line 4 is never executed.
+- In the example above, only 4 of the 5 lines of the main code is executed during test runs. We can say that the **test coverage is 80%**.
+
+**Test Coverage** is the metric measuring how much of your code is executed when you run your tests. 0% coverage means you have no tests, and 100% coverage means that your tests are written so that all code paths in your program are invoked by tests.
+
+### Is 100% coverage sufficient
+
+Let's look at another example, and in this case, our main code is clearly wrong:
+
+```python
+1: def abs_value(a):
+2:     return a
+```
+
+```python
+from important_code import abs_value
+
+
+class TestAbs:
+    def test_positive(self):
+        assert 1 == abs_value(1)
+```
+
+Let's ask the two important questions:
+
+1. Do the tests pass? **Yes**
+2. What is the test coverage? **100%**
+
+But, your implementation of `abs_value()` is clearly wrong!
+
+This is a good time to remind you that the coverage metric only checks if code is executed. But, the same line of code can be executed with many values of variables, and coverage doesn't take that into account. So, even if your tests _cover_ each line of your code, your tests may not have invoked each of those lines with a good enough variety of values.
+
+As we mentioned earlier in the section about Coverage, it's not a metric that you can completely rely on. The way to interpret Test Coverage is this: **High coverage is necessary, but not sufficient, to say that your code is well tested.**
+
