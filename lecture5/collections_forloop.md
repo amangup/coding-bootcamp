@@ -666,7 +666,7 @@ Num cities with population more than 2 Million: 4
 
 
 ## Practice Exercises
-- Take two dictionaries as input, and return a new dictionary that has all elements the elements common to both input dictionaries.
+- Take two dictionaries as input, and return a new list that has all elements the keys common to both input dictionaries.
 
 
 
