@@ -68,55 +68,59 @@ The questions we are looking to answer are:
 9. Create a histogram that shows female to male ratio of students in each grade from K to 12.
 
 ## Reading the data files
-The data files are structured in a way such that every row has many columns of data. 
+The data files are structured like a table - every row has many columns of data.
 - The first row has headers which explain what the column contains.
 - Every row is separated by a `TAB` character
 - Not all values are "sanitized". For example, in the staff data, County names have a bunch of extra spaces at the end - and we will have to remove those. These kinds of issues are not unusual in data files, and we have to take care of them ourselves.
 
-We would want to read the file, and get every row as its own tuple, so that we can read any column in each row. We would also like to refer to each column by its name in the header.
+We would want to read the file to get a list of _records_, where each record is data from one row. The data in each row will be represented as a dictionary, so that we can access any column in the row by its column name. E.g., we want to access the age in any one record as `record['Age']`. Thus, when we read a file, we want to create a **list of dictionaries**.
 
 Keeping all this in mind, here is the function which reads a file:
 
 ```python
 def get_records(filename, seperator="\t"):
     records = []
-    with open(filename) as data_file:
-        for line in data_file:
-            row = line.split(seperator)
-            records.append(tuple(row))
 
-    headers = {}
-    for i, item in enumerate(records[0]):
-        headers[item] = i
-    return headers, records[1:]
+    with open(filename) as data_file:
+        for i, line in enumerate(data_file):
+            row = line.split(seperator)
+            if i == 0:
+                column_names = row
+            else:
+                column_values = row
+                items = zip(column_names, column_values)
+                records.append(dict(items))
+
+    return records
 ```
 
 Let's go over what is happening in this function:
-- We are going through the file line by line. We are creating a tuple whose contents are the columns in that line. All the tuples are stored in the `records` list.
-- We are creating a map from header title to column index. This will allow us to refer to any column using its title.
-- Finally, we are returning the headers map and all the records except the header.
+- We are going through the file line by line, and using `enumerate()` to get the row numbers while we iterating.
+- When we are on the very first row, we know that row contains the names of the columns in the data. We store the contents of that row and keep it for future in the variable `column_names`.
+- For every other row, the contents of the row are the values corresponding to the column names. Our goal is to create a dictionary where the keys are the column names, and the values are the contents of that specific row.
+- To create the dictionary, we _zip_ the keys and values to create a sequence (iterable) of tuples of the type `(key1, value1), (key2, value2), ...`
+- If we convert this _typecast_ this sequence to the _dict_ type, we get the dictionary that we want.
+
 
 ## Answering the first question: Number of teachers
 
 Before we delve into the code, let's figure out what we need to do get to the answer.
-- Every row in the data (except the header) contains information about a staff member.
+- Every row in the data contains information about a staff member.
 - To know if the staff member is a teacher or not, we need to look at the column titled **FTE Teaching**. This column tells us if this staff member works as a teacher. If the value of this column > 0, then this staff member is a part time or a full time teacher.
 - To solve the problem: We count the number of records which have the value of column **FTE Teaching** > 0.
 
 Here is the code that does that:
 
 ```python
-staff_headers, staff_records = get_records("ca_staff_data_2016.csv")
+staff_records = get_records("ca_staff_data_2016.csv")
 num_teachers = 0
 for record in staff_records:
-    is_teacher = float(record[staff_headers["FTE Teaching"]]) > 0
+    is_teacher = float(record["FTE Teaching"]) > 0
     if is_teacher:
         num_teachers += 1
         
 print("Number of teachers: %s" % num_teachers)
 ```
-
-Note how we are using the `staff_headers` dictionary to find the value of a column using the header title.
 
 Since we are looking at teacher records, why not look at another question about teachers.
 
@@ -128,12 +132,12 @@ This should be easy once we've understood how we solved the previous problem.
 
 We modify the code for the previous answer to solve this:
 ```python
-staff_headers, staff_records = get_records("ca_staff_data_2016.csv")
+staff_records = get_records("ca_staff_data_2016.csv")
 num_teachers = 0
 num_female_teachers = 0
 for record in staff_records:
-    is_teacher = float(record[staff_headers["FTE Teaching"]]) > 0
-    gender = record[staff_headers["GenderCode"]]
+    is_teacher = float(record["FTE Teaching"]) > 0
+    gender = record["GenderCode"]
     if is_teacher:
         num_teachers += 1
         if gender == "F":
@@ -146,7 +150,7 @@ print("California has %.2f percent female teachers" %
 Let's look at the student records now.
 
 ## Answering the second question: Number of students
-The student records are organized a bit differently. Each row in this file doesn't contain information about just one student, but a bunch of students all of whom satisfy the same criteria (belong to the same district, go to the same school, are of the same gender, and so on)
+The student records are organized a bit differently. Each row in this file doesn't just contain information about any  one student, but a group of students all of whom satisfy the same criteria (belong to the same district, go to the same school, are of the same gender, and so on)
 
 To find the total number of students:
 - In every row, the column **ENR_TOTAL** contains the count of total enrolled students for that category of students. We just need to sum this column over all rows to get our answer.
@@ -154,10 +158,10 @@ To find the total number of students:
 This should be simple:
 
 ```python
-student_headers, student_records = get_records("ca_student_data_2016.csv")
+student_records = get_records("ca_student_data_2016.csv")
 num_students = 0
 for record in student_records:
-    num_students += int(record[student_headers["ENR_TOTAL"]])
+    num_students += int(record["ENR_TOTAL"])
     
 print("Number of students: %s" % num_students)
 ```
@@ -169,20 +173,20 @@ Let's consider the SAN FRANCISCO county. There must be thousands of teachers in 
 
 Let's divide this problem into two parts:
 1. Get the ages of all teachers in each County.
-- From the description of the problem statement, it looks like we need a map from County Name to the list of ages for all teachers.
+- From the description of the problem statement, it looks like we need a map from County Name to the _list of ages_ for all teachers.
 - To get the County Name, there is a header title called **CountyName**.
 - To get the age, there is a header title called **Age**.
 
 Let's create this map:
 
 ```python
-staff_headers, staff_records = get_records("ca_staff_data_2016.csv")
+staff_records = get_records("ca_staff_data_2016.csv")
 county_ages = {}
 for record in staff_records:
-    is_teacher = float(record[staff_headers["FTE Teaching"]]) > 0
+    is_teacher = float(record["FTE Teaching"]) > 0
     if is_teacher:
-        county = record[staff_headers["CountyName"]].strip()
-        age = int(record[staff_headers["Age"]])
+        county = record["CountyName"].strip()
+        age = int(record["Age"])
 
         ages_list = county_ages.get(county, [])
         ages_list.append(age)
@@ -198,7 +202,7 @@ county_ages[county] = ages_list
 ```
 
 - In every iteration, we need to append the age of the current teacher in the list of ages associated with the current teacher's county.
-- In the first line of this segment, we get that list from the `county_ages` dictionary. If that list is not in the dictionary, we create a new list.
+- In the first line of this segment, we get that list from the `county_ages` dictionary. If that list is not in the dictionary, we create a new list (look at the [description of the `get()` function here](https://docs.python.org/3.6/library/stdtypes.html#dict.get)).
 - We then append the age of the current teacher to that list, and then put that list back into the dictionary.
 
 The key value pairs in the `county_ages` dictionary look like this:
